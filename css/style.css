@@ -348,3 +348,41 @@ select:focus {
     from { width: 100%; }
     to { width: 0%; }
 }
+
+/* Volume Slider Styling */
+.volume-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ea580c;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: #c2410c;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ea580c;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    background: #c2410c;
+}
+
+/* Volume Control Animation */
+#volume-control {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
