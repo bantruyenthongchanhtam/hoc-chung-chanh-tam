@@ -22,7 +22,55 @@ window.onload = async () => {
     initMusic();
     initEvents();
     lucide.createIcons();
+    Toast.init()
 };
+
+// Modal Functions
+function openModal() {
+    document.getElementById("formModal").classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+    document.getElementById("formModal").classList.remove("active");
+    document.body.style.overflow = "auto";
+}
+
+function submitForm(event) {
+    event.preventDefault();
+
+    const message = document.getElementById("messageInput").value.trim();
+    if (!message) {
+        Toast.error(Constant.MESSAGE.ERROR.MSG_001, Constant.EMPTY);
+        return;
+    }
+
+    const entryId = Constant.CONFIG.GOOGLE_FORM.ENTRY_ID;
+    const formId = Constant.CONFIG.GOOGLE_FORM.FORM_ID;
+
+    const submitUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse`;
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = submitUrl;
+    form.target = "hidden_iframe";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = entryId;
+    input.value = message;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+
+    form.submit();
+    document.body.removeChild(form);
+
+    // UX
+    document.getElementById("confessionForm").reset();
+    closeModal();
+    Toast.success(Constant.MESSAGE.SUCCESS.MSG_001, Constant.EMPTY);
+}
 
 const showLoader = () =>
     document.getElementById("global-loader").classList.remove("fade-out");
@@ -34,6 +82,62 @@ const wrapWithLoader = async (fn) => {
     await new Promise((r) => setTimeout(r, 400));
     await fn();
     hideLoader();
+};
+
+const Toast = {
+    init() {
+        this.container = document.getElementById('toast-container');
+    },
+
+    show(type, title, message, duration = 4000) {
+        if (!this.container) this.init();
+
+        // Chọn icon dựa trên loại thông báo
+        const icons = {
+            success: 'check-circle',
+            error: 'alert-circle',
+            warning: 'alert-triangle',
+            info: 'info'
+        };
+
+        // Tạo element toast
+        const toast = document.createElement('div');
+        toast.className = `toast-item toast-${type}`;
+        toast.style.setProperty('--duration', `${duration}ms`);
+        
+        toast.innerHTML = `
+            <div class="flex-shrink-0">
+                <i data-lucide="${icons[type]}" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-stone-900 text-sm">${title}</h4>
+                <p class="text-stone-500 text-xs mt-0.5">${message}</p>
+            </div>
+            <button class="text-stone-300 hover:text-stone-500 transition-colors" onclick="this.parentElement.remove()">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <div class="toast-progress"></div>
+        `;
+
+        // Thêm vào container và khởi tạo icon
+        this.container.appendChild(toast);
+        lucide.createIcons();
+
+        // Hiệu ứng trượt vào
+        setTimeout(() => toast.classList.add('show'), 10);
+
+        // Tự động xóa sau thời gian chỉ định
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, duration);
+    },
+
+    // FUNCTION
+    success(title, msg) { this.show('success', title, msg); },
+    error(title, msg) { this.show('error', title, msg); },
+    warning(title, msg) { this.show('warning', title, msg); },
+    info(title, msg) { this.show('info', title, msg); }
 };
 
 /* =======================
@@ -393,7 +497,8 @@ function applySort(members) {
     UI RENDER HELPERS
 ======================= */
 function renderMemberCard(m) {
-    const imageSrc = (m.img && m.img.trim() !== "") ? m.img : Constant.DEFAULT_AVATAR;
+    const imageSrc =
+        m.img && m.img.trim() !== "" ? m.img : Constant.DEFAULT_AVATAR;
 
     return `
         <div class="profile-card fade-in">

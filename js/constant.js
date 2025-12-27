@@ -5,9 +5,24 @@ const Constant = (() => {
     };
 
     const MESSAGE = {
-        ERROR: {},
+        ERROR: {
+            MSG_001: 'Vui lòng nhập nội dung',
+        },
         WARNING: {},
+        SUCCESS: {
+            MSG_001: "Gửi tin nhắn thành công!"
+        },
     };
+
+    const CONFIG = {
+        GOOGLE_FORM : {
+            ENTRY_ID: 'entry.1611862614',
+            FORM_ID: '1FAIpQLSflwYMViQ1H06TmKg-LdaBDdEoqA57Js2fefctUBVrMlXNabg',
+        },
+        DATABASE: {
+            DATA_EXCEL_URL: "./data/DATA.xlsx",
+        }
+    }
 
     return Object.freeze({
         EMPTY: "",
@@ -18,6 +33,6 @@ const Constant = (() => {
         DEFAULT_AVATAR: "./images/USER.png",
         TAB_LIMITS: TAB_LIMITS,
         MESSAGE: MESSAGE,
-        DATA_EXCEL_URL: "./data/DATA.xlsx",
+        CONFIG: CONFIG,
     });
 })();
