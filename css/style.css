@@ -386,3 +386,11 @@ select:focus {
     transform: translateY(-10px);
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
+/* Adjust music controls position for mobile */
+@media (max-width: 768px) {
+    .fixed.bottom-8.right-4 {
+        right: 0.5rem !important;
+        bottom: 0.5rem !important;
+    }
+}
