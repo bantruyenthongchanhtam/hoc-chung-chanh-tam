@@ -82,6 +82,52 @@
         <div class="blob top-0 right-0"></div>
         <div class="blob bottom-0 left-0"></div>
 
+        <!-- Modal Form Tâm Sự -->
+        <div id="formModal">
+            <div class="modal-content fade-in">
+                <button
+                    onclick="closeModal()"
+                    class="absolute top-4 right-4 text-stone-400 hover:text-orange-600 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i
+                            data-lucide="heart"
+                            class="w-8 h-8 text-orange-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-orange-900">
+                        GÓC TÂM SỰ 🌿
+                    </h2>
+                    <p class="text-stone-500 text-sm mt-2">
+                        Bạn không đơn độc đâu. Dù câu chuyện của bạn là gì, tụi
+                        mình sẵn lòng lắng nghe – bằng cả trái tim. 💛
+                    </p>
+                </div>
+
+                <form id="confessionForm" onsubmit="submitForm(event)">
+                    <div class="mb-4">
+                        <label
+                            class="block text-sm font-bold text-orange-900 mb-2"
+                            >Lời nhắn của bạn</label
+                        >
+                        <textarea
+                            id="messageInput"
+                            rows="6"
+                            class="w-full px-4 py-3 rounded-xl border border-orange-100 bg-orange-50/30 resize-none transition-all"
+                            placeholder="Hãy viết gì đó..."></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2">
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                        Gửi
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <!-- Music Player -->
         <div class="fixed bottom-8 right-8 z-50">
             <button
@@ -256,6 +302,9 @@
                 <p id="pagination-info" class="text-stone-400 text-xs"></p>
             </div>
 
+            <div id="toast-container"></div>
+            <iframe name="hidden_iframe" style="display: none"></iframe>
+
             <footer class="mt-5 border-t border-orange-100 pt-5">
                 <div class="flex flex-col items-center text-center">
                     <div
@@ -294,7 +343,7 @@
                             target="_blank"
                             rel="noopener noreferrer"
                             class="footer-social-link w-12 h-12 rounded-full border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm"
-                            title="Theo dõi chúng tôi trên Facebook">
+                            title="Facebook Học Chúng Chánh Tâm">
                             <i data-lucide="facebook" class="w-6 h-6"></i>
                         </a>
 
@@ -303,16 +352,16 @@
                             href="https://www.youtube.com/@HOCCHUNGCHANHTAM"
                             target="_blank"
                             class="footer-social-link w-12 h-12 rounded-full border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm"
-                            title="Youtube">
+                            title="Youtube Học Chúng Chánh Tâm">
                             <i data-lucide="youtube" class="w-6 h-6"></i>
                         </a>
 
-                        <!-- Mail Link -->
+                        <!-- Modal Confession -->
                         <a
-                            href="#"
+                            onclick="openModal()"
                             class="footer-social-link w-12 h-12 rounded-full border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm"
-                            title="Gửi Email">
-                            <i data-lucide="mail" class="w-6 h-6"></i>
+                            title="Gửi Tâm Sự">
+                            <i data-lucide="heart-handshake" class="w-6 h-6"></i>
                         </a>
                     </div>
                 </div>
