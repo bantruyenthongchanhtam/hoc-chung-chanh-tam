@@ -139,6 +139,9 @@ select:focus {
     #music-toggle:hover .music-tooltip-el {
         opacity: 1;
     }
+    #confession-toggle:hover .confession-tooltip-el {
+        opacity: 1;
+    }
 }
 
 #global-loader {

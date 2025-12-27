@@ -131,14 +131,25 @@
         <!-- Music Player -->
         <div class="fixed bottom-8 right-8 z-50">
             <button
+                id="confession-toggle"
+                onclick="openModal()"
+                class="bg-white group relative w-12 h-12 rounded-full border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm hover:shadow-md transition-all"
+                title="Gửi Tâm Sự">
+                <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                <span
+                    class="confession-tooltip-el absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-stone-800 text-white text-[10px] px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap uppercase tracking-widest font-bold hidden md:block"
+                    >Gửi lời nhắn</span
+                >
+            </button>
+            <button
                 id="music-toggle"
-                class="bg-white p-4 rounded-full shadow-lg border border-orange-100 text-orange-600 hover:text-orange-700 hover:shadow-xl transition-all group relative flex items-center justify-center">
+                class="bg-white mt-2 p-4 rounded-full shadow-lg border border-orange-100 text-orange-600 hover:text-orange-700 hover:shadow-xl transition-all group relative flex items-center justify-center">
                 <!-- Music icon container -->
                 <div id="music-icon" class="flex items-center justify-center">
                     <!-- Default state: muted speaker icon -->
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6"
+                        class="h-4 w-4"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -157,7 +168,9 @@
                 <!-- Tooltip text -->
                 <span
                     id="music-tooltip"
-                    class="music-tooltip-el absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-stone-800 text-white text-[10px] px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap uppercase tracking-widest font-bold hidden md:block"></span>
+                    class="music-tooltip-el absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-stone-800 text-white text-[10px] px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap uppercase tracking-widest font-bold hidden md:block">
+                    Bật nhạc</span
+                >
             </button>
             <!-- Background music audio -->
             <audio id="bg-music" loop>
@@ -361,7 +374,9 @@
                             onclick="openModal()"
                             class="footer-social-link w-12 h-12 rounded-full border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm"
                             title="Gửi Tâm Sự">
-                            <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+                            <i
+                                data-lucide="heart-handshake"
+                                class="w-6 h-6"></i>
                         </a>
                     </div>
                 </div>
