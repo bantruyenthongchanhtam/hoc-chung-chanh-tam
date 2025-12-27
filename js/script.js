@@ -182,26 +182,101 @@ function initEvents() {
 function initMusic() {
     const audio = document.getElementById("bg-music");
     const btn = document.getElementById("music-toggle");
+    const volumeSlider = document.getElementById("volume-slider");
+    const volumeValue = document.getElementById("volume-value");
+    const volumeControl = document.getElementById("volume-control");
+    
+    let volumeTimeout;
 
+    // Set initial volume
+    audio.volume = 0.5; // 50% volume by default
+    if (volumeSlider) volumeSlider.value = 50;
+    if (volumeValue) volumeValue.textContent = "50%";
+
+    // Play/Pause toggle
     btn.onclick = () => {
         if (audio.paused) {
             audio.play();
             updateMusicUI(true);
+            showVolumeControl();
         } else {
             audio.pause();
             updateMusicUI(false);
         }
     };
+
+    // Hover vào nút nhạc để hiện volume control
+    btn.onmouseenter = () => {
+        if (!audio.paused) {
+            showVolumeControl();
+        }
+    };
+
+    // Volume control
+    if (volumeSlider) {
+        volumeSlider.oninput = (e) => {
+            const volume = e.target.value / 100;
+            audio.volume = volume;
+            if (volumeValue) {
+                volumeValue.textContent = `${e.target.value}%`;
+            }
+            
+            // Reset timeout mỗi khi kéo slider
+            clearTimeout(volumeTimeout);
+            volumeTimeout = setTimeout(() => {
+                hideVolumeControl();
+            }, 3000); // Ẩn sau 3 giây không tương tác
+        };
+        
+        // Khi bắt đầu kéo, clear timeout
+        volumeSlider.onmousedown = () => {
+            clearTimeout(volumeTimeout);
+        };
+        
+        volumeSlider.ontouchstart = () => {
+            clearTimeout(volumeTimeout);
+        };
+    }
+    
+    // Function để show volume control
+    function showVolumeControl() {
+        if (volumeControl && !audio.paused) {
+            volumeControl.classList.remove("hidden");
+            setTimeout(() => {
+                volumeControl.style.opacity = "1";
+                volumeControl.style.transform = "translateY(0)";
+            }, 10);
+            
+            // Tự động ẩn sau 2 giây
+            clearTimeout(volumeTimeout);
+            volumeTimeout = setTimeout(() => {
+                hideVolumeControl();
+            }, 2000);
+        }
+    }
+    
+    // Function để hide volume control
+    function hideVolumeControl() {
+        if (volumeControl && !audio.paused) {
+            volumeControl.style.opacity = "0";
+            volumeControl.style.transform = "translateY(-10px)";
+            setTimeout(() => {
+                volumeControl.classList.add("hidden");
+            }, 300);
+        }
+    }
 }
 
 /* Update music button UI based on play state */
 function updateMusicUI(isPlaying) {
     const icon = document.getElementById("music-icon");
     const tooltip = document.getElementById("music-tooltip");
+    const volumeControl = document.getElementById("volume-control");
 
     if (isPlaying) {
         icon.classList.add("music-pulse");
         tooltip.textContent = "Tắt nhạc";
+        
         icon.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
@@ -210,6 +285,16 @@ function updateMusicUI(isPlaying) {
     } else {
         icon.classList.remove("music-pulse");
         tooltip.textContent = "Bật nhạc";
+        
+        // Hide volume control khi tắt nhạc
+        if (volumeControl) {
+            volumeControl.style.opacity = "0";
+            volumeControl.style.transform = "translateY(-10px)";
+            setTimeout(() => {
+                volumeControl.classList.add("hidden");
+            }, 300);
+        }
+        
         icon.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
@@ -218,6 +303,7 @@ function updateMusicUI(isPlaying) {
         `;
     }
 }
+
 
 /* =======================
     RENDER YEAR TABS
