@@ -16,6 +16,8 @@ let yearPageIndex = 0;
 window.onload = async () => {
     await wrapWithLoader(async () => {
         renderYearTabs();
+        updateYearPageIndex();
+        updateDisplay();
     });
 
     initLotusEffect();
@@ -205,7 +207,7 @@ function initMusic() {
         }
     };
 
-    // Hover vào nút nhạc để hiện volume control
+    // Hover show volume control
     btn.onmouseenter = () => {
         if (!audio.paused) {
             showVolumeControl();
@@ -221,14 +223,14 @@ function initMusic() {
                 volumeValue.textContent = `${e.target.value}%`;
             }
             
-            // Reset timeout mỗi khi kéo slider
+            // Reset timeout when change slider
             clearTimeout(volumeTimeout);
             volumeTimeout = setTimeout(() => {
                 hideVolumeControl();
-            }, 3000); // Ẩn sau 3 giây không tương tác
+            }, 2000); // Hide after 3s
         };
         
-        // Khi bắt đầu kéo, clear timeout
+        // Clear timeout
         volumeSlider.onmousedown = () => {
             clearTimeout(volumeTimeout);
         };
@@ -238,7 +240,7 @@ function initMusic() {
         };
     }
     
-    // Function để show volume control
+    // Show volume control
     function showVolumeControl() {
         if (volumeControl && !audio.paused) {
             volumeControl.classList.remove("hidden");
@@ -247,7 +249,7 @@ function initMusic() {
                 volumeControl.style.transform = "translateY(0)";
             }, 10);
             
-            // Tự động ẩn sau 2 giây
+            // Auto hide volume control after 2s
             clearTimeout(volumeTimeout);
             volumeTimeout = setTimeout(() => {
                 hideVolumeControl();
@@ -255,7 +257,7 @@ function initMusic() {
         }
     }
     
-    // Function để hide volume control
+    // Hide volume control
     function hideVolumeControl() {
         if (volumeControl && !audio.paused) {
             volumeControl.style.opacity = "0";
@@ -361,14 +363,7 @@ async function renderYearTabs() {
             renderYearTabs();
         }
     };
-
-    await updateDisplay();
 }
-
-window.onresize = () => {
-    updateYearPageIndex();
-    renderYearTabs();
-};
 
 /* =======================
     MEMBER LIST & PAGINATION
