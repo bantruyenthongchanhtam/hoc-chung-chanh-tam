@@ -40,10 +40,26 @@ const ExcelService = (() => {
         });
     };
 
+    const getDataAllSheet = async () => {
+        const workbook = await loadWorkbook();
+    
+        return workbook.SheetNames.flatMap((name) => {
+            const rows = XLSX.utils.sheet_to_json(
+                workbook.Sheets[name],
+                { header: 1 }
+            );
+    
+            if (rows.length <= 1) return []; // chỉ có header
+    
+            return rows.slice(1);
+        });
+    };
+
     /* =======================
        PUBLIC API
     ======================= */
     return {
         readSheet: getSheet,
+        readAllSheet: getDataAllSheet,
     };
 })();
