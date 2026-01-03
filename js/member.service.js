@@ -4,6 +4,7 @@
  */
 const MemberService = (() => {
     const CACHE = {
+        "Tất cả": null,
         2026: null,
         2025: null,
         2024: null,
@@ -50,7 +51,14 @@ const MemberService = (() => {
     const loadYear = async (year) => {
         if (CACHE[year]) return CACHE[year];
 
-        const rows = await ExcelService.readSheet(String(year));
+        let rows;
+
+        if (year === Constant.ALL) {
+            rows = await ExcelService.readAllSheet();
+        } else {
+            rows = await ExcelService.readSheet(String(year));
+        }
+
         if (!rows || rows.length <= 1) return [];
 
         const members = rows
@@ -79,9 +87,11 @@ const MemberService = (() => {
      * @returns
      */
     const getAllYears = () =>
-        Object.keys(CACHE)
-            .map(Number)
-            .sort((a, b) => b - a);
+        Object.keys(CACHE).sort((a, b) => {
+            if (a === Constant.ALL) return -1;
+            if (b === Constant.ALL) return 1;
+            return Number(b) - Number(a);
+        });
 
     return Object.freeze({
         getMembersByYear,
