@@ -62,7 +62,6 @@ const MemberService = (() => {
         if (!rows || rows.length <= 1) return [];
 
         const members = rows
-            .slice(1)
             .filter((row) =>
                 row.some(
                     (cell) => cell !== null && cell !== undefined && cell !== ""

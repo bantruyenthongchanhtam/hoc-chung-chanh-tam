@@ -35,22 +35,22 @@ const ExcelService = (() => {
             return [];
         }
 
-        return XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
-            header: 1,
-        });
+        return XLSX.utils
+            .sheet_to_json(workbook.Sheets[sheetName], {
+                header: 1,
+            })
+            .slice(1);
     };
 
     const getDataAllSheet = async () => {
         const workbook = await loadWorkbook();
-    
+
         return workbook.SheetNames.flatMap((name) => {
-            const rows = XLSX.utils.sheet_to_json(
-                workbook.Sheets[name],
-                { header: 1 }
-            );
-    
-            if (rows.length <= 1) return []; // chỉ có header
-    
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[name], {
+                header: 1,
+            });
+
+            if (rows.length <= 1) return [];
             return rows.slice(1);
         });
     };
