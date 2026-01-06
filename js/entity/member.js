@@ -2,7 +2,7 @@
  * Member Class
  */
 class Member {
-    constructor(id, fullName, name, position, group, note, img) {
+    constructor(id, fullName, name, position, group, note, img, sortOrder) {
         this.id = id;
         this.fullName = fullName;
         this.name = name;
@@ -10,5 +10,6 @@ class Member {
         this.group = group;
         this.note = note;
         this.img = img;
+        this.sortOrder = sortOrder;
     }
 }

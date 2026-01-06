@@ -5,7 +5,7 @@
 const MemberService = (() => {
     const CACHE = {
         "Tất cả": null,
-        2026: null,
+        //2026: null,
         2025: null,
         2024: null,
         2023: null,
@@ -40,7 +40,8 @@ const MemberService = (() => {
             row[3], // position
             row[4], // group
             row[5], // note
-            row[6] // image
+            row[6], // image
+            row[7] // sort_order
         );
 
     /**
@@ -60,7 +61,6 @@ const MemberService = (() => {
         }
 
         if (!rows || rows.length <= 1) return [];
-
         const members = rows
             .filter((row) =>
                 row.some(
@@ -68,8 +68,8 @@ const MemberService = (() => {
                 )
             )
             .map(mapRowToMember);
+        CACHE[year] = members.sort((a, b) => a.sortOrder - b.sortOrder);
 
-        CACHE[year] = members;
         return members;
     };
 
