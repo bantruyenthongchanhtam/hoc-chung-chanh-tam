@@ -54,10 +54,10 @@
             content="https://bantruyenthongchanhtam.github.io/hoc-chung-chanh-tam/assets/image/thumbnail.jpg" />
 
         <!-- Favicon -->
-        <link rel="icon" type="image/png" href="./assets/image/favicon.png" />
+        <link rel="icon" type="image/png" href="../assets/image/favicon.png" />
 
         <!-- Apple Touch Icon (cho iPhone/iPad) -->
-        <link rel="apple-touch-icon" href="./assets/image/favicon.png" />
+        <link rel="apple-touch-icon" href="../assets/image/favicon.png" />
 
         <!-- Google Fonts -->
         <link
@@ -67,7 +67,7 @@
         <!-- Lucide Icons -->
         <script src="https://unpkg.com/lucide@latest"></script>
         <!-- Main Styles -->
-        <link rel="stylesheet" href="./css/style.css" />
+        <link rel="stylesheet" href="../css/style.css" />
     </head>
     <body class="p-4 md:p-8">
         <div class="max-w-7xl mx-auto">
@@ -90,7 +90,7 @@
                     class="w-24 h-1 bg-orange-300 mx-auto mt-6 rounded-full"></div>
             </header>
 
-            <!-- YEAR TABS SECTION -->
+            <!-- GROUP TABS SECTION -->
             <div class="mb-4 flex items-center justify-center gap-2">
                 <button
                     id="prev-years"
@@ -133,63 +133,6 @@
                 </button>
             </div>
 
-            <!-- =======================
-                SEARCH, FILTER & SORT
-            ======================== -->
-            <div
-                class="mb-8 flex flex-col gap-4 bg-white/50 p-6 rounded-2xl border border-orange-100 backdrop-blur-sm">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <!-- Search -->
-                    <div class="relative">
-                        <input
-                            type="text"
-                            id="search-input"
-                            placeholder="Tìm tên thành viên..."
-                            class="w-full pl-10 pr-4 py-2 rounded-xl border border-orange-200 bg-white/80 text-stone-700" />
-                        <div class="absolute left-3 top-2.5 text-orange-400">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Group Filter -->
-                    <select
-                        id="group-filter"
-                        class="w-full px-2 py-2 rounded-xl border border-orange-200 bg-white/80 text-stone-700 cursor-pointer">
-                        <option value="all">Tất cả Nhóm</option>
-                    </select>
-
-                    <!-- Sort -->
-                    <select
-                        id="sort-select"
-                        class="w-full px-2 py-2 rounded-xl border border-orange-200 bg-white/80 text-stone-700 cursor-pointer">
-                        <option value="none">Sắp xếp: Mặc định</option>
-                        <option value="name-asc">Tên (A-Z)</option>
-                        <option value="name-desc">Tên (Z-A)</option>
-                    </select>
-
-                    <!-- Page Size -->
-                    <select
-                        id="limit-select"
-                        class="w-full px-2 py-2 rounded-xl border border-orange-200 bg-white/80 text-stone-700 cursor-pointer">
-                        <option value="8" selected>Hiển thị: 8</option>
-                        <option value="20">Hiển thị: 20</option>
-                        <option value="100">Hiển thị: 100</option>
-                        <option value="200">Hiển thị: 200</option>
-                    </select>
-                </div>
-            </div>
-
             <!-- Member Grid -->
             <div
                 id="member-grid"
@@ -197,13 +140,6 @@
                 <!-- JS Injection -->
             </div>
 
-            <!-- Pagination -->
-            <div id="pagination" class="mt-12 flex flex-col items-center gap-4">
-                <div
-                    id="pagination-numbers"
-                    class="flex justify-center items-center gap-2"></div>
-                <p id="pagination-info" class="text-stone-400 text-xs"></p>
-            </div>
 
             <div id="toast-container"></div>
             <iframe name="hidden_iframe" style="display: none"></iframe>
@@ -217,7 +153,7 @@
                             loading="lazy"
                             onload="this.classList.remove('opacity-0'); this.parentElement.classList.remove('img-skeleton');">
                             <img
-                                src="./assets/image/logo.png"
+                                src="../assets/image/logo.png"
                                 alt="Logo Chánh Tâm"
                                 class="footer-logo-img" />
                         </div>
@@ -273,12 +209,12 @@
             </footer>
         </div>
         <!-- Loader -->
-        <div id="global-loader">
+        <!-- <div id="global-loader">
             <div class="loader-circle mb-4"></div>
             <p class="text-orange-600 font-medium animate-pulse">
                 Đang tải dữ liệu...
             </p>
-        </div>
+        </div> -->
 
         <!-- Decorative background blobs -->
         <div class="blob top-0 right-0"></div>
@@ -336,13 +272,13 @@
             <!-- Confession Button -->
             <a
                 id="group-toggle"
-                href="/group.html"
+                href="/index.html"
                 class="bg-white group relative w-12 h-12 rounded-full border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm hover:shadow-md transition-all"
                 title="Các nhóm nhỏ">
-                <i data-lucide="users" class="w-5 h-5"></i>
+                <i data-lucide="house" class="w-5 h-5"></i>
                 <span
                     class="confession-tooltip-el absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-stone-800 text-white text-[10px] px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap uppercase tracking-widest font-bold hidden md:block"
-                    >Các nhóm nhỏ</span
+                    >Trang chủ</span
                 >
             </a>
 
@@ -453,6 +389,6 @@
         <!-- UI -->
         <script src="./js/common/modal.js"></script>
         <script src="./js/common/toast.js"></script>
-        <script src="./js/script.js"></script>
+        <script src="./js/group/group.js"></script>
     </body>
 </html>

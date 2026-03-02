@@ -142,6 +142,9 @@ select:focus {
     #confession-toggle:hover .confession-tooltip-el {
         opacity: 1;
     }
+    #group-toggle:hover .confession-tooltip-el {
+        opacity: 1;
+    }
 }
 
 #global-loader {
