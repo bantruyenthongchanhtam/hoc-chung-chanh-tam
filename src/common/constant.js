@@ -30,7 +30,7 @@ const Constant = (() => {
         NAME_ASC: "name-asc",
         NAME_DESC: "name-desc",
         ITEMS_PER_PAGE: 8,
-        DEFAULT_AVATAR: "./images/USER.webp",
+        DEFAULT_AVATAR: "./assets/image/USER.webp",
         TAB_LIMITS: TAB_LIMITS,
         MESSAGE: MESSAGE,
         CONFIG: CONFIG,
