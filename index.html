@@ -67,7 +67,7 @@
         <!-- Lucide Icons -->
         <script src="https://unpkg.com/lucide@latest"></script>
         <!-- Main Styles -->
-        <link rel="stylesheet" href="./css/style.css" />
+        <link rel="stylesheet" href="./assets/css/style.css" />
     </head>
     <body class="p-4 md:p-8">
         <div class="max-w-7xl mx-auto">
@@ -334,19 +334,6 @@
         <!-- Music Player -->
         <div class="fixed bottom-8 right-4 z-50 flex flex-col items-end gap-2">
             <!-- Confession Button -->
-            <a
-                id="group-toggle"
-                href="/group.html"
-                class="bg-white group relative w-12 h-12 rounded-full border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm hover:shadow-md transition-all"
-                title="Các nhóm nhỏ">
-                <i data-lucide="users" class="w-5 h-5"></i>
-                <span
-                    class="confession-tooltip-el absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-stone-800 text-white text-[10px] px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap uppercase tracking-widest font-bold hidden md:block"
-                    >Các nhóm nhỏ</span
-                >
-            </a>
-
-            <!-- Confession Button -->
             <button
                 id="confession-toggle"
                 onclick="openModal()"
@@ -441,18 +428,18 @@
         <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 
         <!-- Constants -->
-        <script src="./js/constant.js"></script>
+        <script src="./src/common/constant.js"></script>
 
         <!-- Model -->
-        <script src="./js/entity/member.js"></script>
+        <script src="./src/entity/member.js"></script>
 
         <!-- Service -->
-        <script src="./js/excel.service.js"></script>
-        <script src="./js/member.service.js"></script>
+        <script src="./src/services/excel.service.js"></script>
+        <script src="./src/services/member.service.js"></script>
 
         <!-- UI -->
-        <script src="./js/common/modal.js"></script>
-        <script src="./js/common/toast.js"></script>
-        <script src="./js/script.js"></script>
+        <script src="./src/common/modal.js"></script>
+        <script src="./src/common/toast.js"></script>
+        <script src="./src/script.js"></script>
     </body>
 </html>
