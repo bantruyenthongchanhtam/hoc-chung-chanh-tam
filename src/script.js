@@ -439,9 +439,9 @@ function updateGroupOptions(members) {
 
 function applyFilters(members) {
     return members.filter((item) => {
-        const matchesSearch = item.fullName
+        const matchesSearch = removeAccents(item.fullName)
             .toLowerCase()
-            .includes(searchQuery.toLowerCase());
+            .includes(removeAccents(searchQuery));
         const isAllGroup =
             groupFilter === Constant.ALL || groupFilter === "all";
         const matchesGroup =
@@ -469,6 +469,13 @@ function applySort(members) {
     }
 
     return members;
+}
+
+function removeAccents(str) {
+    return str
+        .normalize("NFD") // Tách các ký tự có dấu thành ký tự gốc + dấu
+        .replace(/[\u0300-\u036f]/g, "") // Xóa bỏ các ký tự dấu đó
+        .toLowerCase();
 }
 
 /* =======================
