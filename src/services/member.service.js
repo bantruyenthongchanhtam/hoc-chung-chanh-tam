@@ -50,15 +50,13 @@ const MemberService = (() => {
      * @returns
      */
     const loadYear = async (year) => {
+        // 1. Guard Clause: Trả về dữ liệu từ Cache ngay lập tức nếu có
         if (CACHE[year]) return CACHE[year];
 
-        let rows;
-
-        if (year === Constant.ALL) {
-            rows = await ExcelService.readAllSheet();
-        } else {
-            rows = await ExcelService.readSheet(String(year));
-        }
+        // 2. Fetching data: Tách biệt logic đọc file
+        let rows = (year === Constant.ALL)
+            ? await ExcelService.readAllSheet()
+            : await ExcelService.readSheet(String(year));
 
         if (!rows || rows.length <= 1) return [];
         const members = rows

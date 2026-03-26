@@ -8,7 +8,7 @@
 ## 🔗 Website
 
 ```
-👉 [Xem tại đây](https://bantruyenthongchanhtam.github.io/hoc-chung-chanh-tam)
+https://bantruyenthongchanhtam.github.io/hoc-chung-chanh-tam
 ```
 ## 📂 Cấu trúc thư mục (Project Structure)
 
