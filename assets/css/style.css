@@ -1,16 +1,90 @@
+/* =======================
+   CSS VARIABLES / BIẾN CSS
+   Central color, spacing, and animation configuration
+   Cấu hình màu sắc, khoảng cách và hoạt ảnh tập trung
+======================= */
+:root {
+    /* Primary Colors / Màu Sắc Chính */
+    --color-primary: #ea580c;
+    --color-primary-dark: #c2410c;
+    --color-primary-light: #fb923c;
+    --color-primary-lighter: #fdba74;
+    --color-primary-lightest: #ffedd5;
+
+    /* Background Colors / Màu Sắc Nền */
+    --color-bg-main: #fffaf0;
+    --color-bg-light: #fff7ed;
+
+    /* Text Colors / Màu Sắc Văn Bản */
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #64748b;
+    --color-text-muted: #a1a5ab;
+
+    /* Status Colors / Màu Sắc Trạng Thái */
+    --color-success: #10b981;
+    --color-error: #ef4444;
+    --color-warning: #f59e0b;
+    --color-info: #3b82f6;
+
+    /* Neutral Colors / Màu Sắc Trung Tính */
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+
+    /* Shadows / Bóng Đổ */
+    --shadow-sm: 0 4px 12px rgba(234, 88, 12, 0.08);
+    --shadow-md: 0 8px 20px rgba(251, 146, 60, 0.08);
+    --shadow-lg: 0 12px 30px rgba(251, 146, 60, 0.15);
+
+    /* Z-Index Scale / Thang Z-Index */
+    --z-background: -1;
+    --z-default: 1;
+    --z-fixed: 10;
+    --z-elevated: 50;
+    --z-modal: 1000;
+    --z-loader: 9999;
+
+    /* Animation Durations / Thời Lượng Hoạt Ảnh */
+    --animation-fast: 150ms;
+    --animation-base: 300ms;
+    --animation-slow: 500ms;
+
+    /* Border Radius / Bán Kính Viền */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 9999px;
+}
+
+/* =======================
+   BASE STYLES / PHONG CÁCH CƠ BẢN
+   Global styles for body, typography, and layout
+   Phong cách toàn cục cho body, typography và layout
+======================= */
+
+/* Body and Global Layout / Body và Bố Cục Toàn Cục */
 body {
     font-family: 'Quicksand', sans-serif;
-    background-color: #fffaf0;
+    background-color: var(--color-bg-main);
     min-height: 100vh;
     overflow-x: hidden;
 }
 
+/* Typography for Headings / Typography cho Tiêu Đề */
 h1,
 h2,
 .font-serif {
     font-family: 'Noto Serif Vietnamese', serif;
 }
 
+/* =======================
+   COMPONENTS / THÀNH PHẦN
+   Styles for reusable UI components
+   Phong cách cho các thành phần UI tái sử dụng
+======================= */
+
+/* Profile Card / Thẻ Hồ Sơ */
 .profile-card {
     background: white;
     border-radius: 12px;
@@ -30,6 +104,7 @@ h2,
     box-shadow: 0 12px 30px rgba(251, 146, 60, 0.15);
 }
 
+/* Image Container / Container Hình Ảnh */
 .image-outer {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -48,12 +123,14 @@ h2,
     border: 2px solid white;
 }
 
+/* Tag Background / Nền Tag */
 .bg-tag {
     background-color: #fff7ed;
     color: #ea580c;
     border: 1px solid #ffedd5;
 }
 
+/* Tabs / Tab */
 .tab-btn {
     transition: all 0.3s ease;
     cursor: pointer;
@@ -66,6 +143,32 @@ h2,
     box-shadow: 0 4px 12px rgba(234, 88, 12, 0.1);
 }
 
+/* Footer Logo / Logo Footer */
+.footer-logo-container {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.15);
+    border: 3px solid white;
+    flex-shrink: 0;
+    background: white;
+}
+
+.footer-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: scale(0.9);
+}
+
+/* =======================
+   ANIMATIONS / HOẠT ẢNH
+   Keyframe animations for effects
+   Hoạt ảnh keyframe cho hiệu ứng
+======================= */
+
+/* Lotus Particles / Hạt Hoa Sen */
 .lotus-particle {
     position: fixed;
     bottom: -50px;
@@ -95,6 +198,7 @@ h2,
     }
 }
 
+/* Background Blobs / Blob Nền */
 .blob {
     position: fixed;
     width: 40vw;
@@ -106,6 +210,7 @@ h2,
     opacity: 0.5;
 }
 
+/* Fade In Animation / Hoạt Ảnh Fade In */
 .fade-in {
     animation: fadeIn 0.5s ease-in-out;
 }
@@ -122,19 +227,126 @@ h2,
     }
 }
 
+/* Spin Animation / Hoạt Ảnh Xoay */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Shimmer Animation / Hoạt Ảnh Lấp Lánh */
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Progress Animation / Hoạt Ảnh Tiến Trình */
+@keyframes progress-linear {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* =======================
+   UTILITIES / TIỆN ÍCH
+   Utility classes and form elements
+   Các class tiện ích và phần tử form
+======================= */
+
+/* Form Elements / Phần Tử Form */
 input:focus,
 select:focus {
     outline: none;
-    border-color: #ea580c;
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.1);
 }
 
+/* Pagination / Phân Trang */
 .page-link.active {
-    background-color: #f97316;
+    background-color: var(--color-primary-light);
     color: white;
-    border-color: #f97316;
+    border-color: var(--color-primary-light);
 }
 
+.page-link.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Search Highlighting / Làm Nổi Bật Tìm Kiếm */
+mark {
+    background-color: #fef3c7;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 600;
+    color: inherit;
+}
+
+/* Clear Search Button / Nút Xóa Tìm Kiếm */
+.clear-search-btn {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: all 0.2s;
+    z-index: 10;
+    display: none; /* Hidden by default - shown only when input has value / Ẩn theo mặc định - chỉ hiển thị khi input có giá trị */
+}
+
+.clear-search-btn:hover {
+    color: #dc2626 !important;
+    transform: scale(1.2);
+}
+
+.clear-search-btn:active {
+    transform: scale(0.95);
+}
+
+/* Image Skeleton Loading / Tải Skeleton Hình Ảnh */
+.img-skeleton {
+    background: #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+
+.img-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+/* Custom Scrollbar / Scrollbar Tùy Chỉnh */
+#tabs-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+#tabs-wrapper {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Fade Out Utility / Tiện Ích Fade Out */
+.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* =======================
+   INTERACTIVE ELEMENTS / PHẦN TỬ TƯƠNG TÁC
+   Hover effects and interactive states
+   Hiệu ứng hover và trạng thái tương tác
+======================= */
+
+/* Hover Effects / Hiệu Ứng Hover */
 @media (hover: hover) {
     #music-toggle:hover .music-tooltip-el {
         opacity: 1;
@@ -147,6 +359,14 @@ select:focus {
     }
 }
 
+.footer-social-link:hover {
+    background: #fb923c;
+    color: white !important;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+}
+
+/* Loader / Trình Tải */
 #global-loader {
     position: fixed;
     inset: 0;
@@ -169,91 +389,13 @@ select:focus {
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
+/* =======================
+   MODALS & OVERLAYS / MODAL & OVERLAY
+   Styles for modal dialogs and overlays
+   Phong cách cho dialog modal và overlay
+======================= */
 
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.fade-out {
-    opacity: 0;
-    visibility: hidden;
-}
-
-.page-link.active {
-    background-color: #fb923c;
-    color: white;
-    border-color: #fb923c;
-}
-
-.page-link.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-/* Image Skeleton Loading */
-.img-skeleton {
-    background: #e5e7eb;
-    position: relative;
-    overflow: hidden;
-}
-
-.img-skeleton::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-    100% {
-        transform: translateX(100%);
-    }
-}
-
-/* Custom Scrollbar for Year Tabs if needed */
-#tabs-wrapper::-webkit-scrollbar {
-    display: none;
-}
-
-#tabs-wrapper {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.footer-social-link:hover {
-    background: #fb923c;
-    color: white !important;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
-}
-
-.footer-logo-container {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.15);
-    border: 3px solid white;
-    flex-shrink: 0;
-    background: white;
-}
-
-.footer-logo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transform: scale(0.9);
-}
-
-/* Modal Styles */
+/* Modal Styles / Phong Cách Modal */
 #formModal {
     display: none;
     position: fixed;
@@ -281,7 +423,7 @@ select:focus {
     position: relative;
 }
 
-/* Toast Container */
+/* Toast Notifications / Thông Báo Toast */
 #toast-container {
     position: fixed;
     top: 1.5rem;
@@ -314,6 +456,7 @@ select:focus {
     transform: translateX(0);
 }
 
+/* Toast Types / Các Loại Toast */
 .toast-success { border-left-color: #10b981; }
 .toast-error { border-left-color: #ef4444; }
 .toast-warning { border-left-color: #f59e0b; }
@@ -324,7 +467,7 @@ select:focus {
 .toast-warning i { color: #f59e0b; }
 .toast-info i { color: #3b82f6; }
 
-/* Progress bar tự động chạy */
+/* Progress Bar / Thanh Tiến Trình */
 .toast-progress {
     position: absolute;
     bottom: 0;
@@ -347,12 +490,11 @@ select:focus {
     animation: progress-linear var(--duration) linear forwards;
 }
 
-@keyframes progress-linear {
-    from { width: 100%; }
-    to { width: 0%; }
-}
-
-/* Volume Slider Styling */
+/* =======================
+   VOLUME SLIDER / SLIDER ÂM LƯỢNG
+   Custom styling for volume control slider
+   Phong cách tùy chỉnh cho slider điều khiển âm lượng
+======================= */
 .volume-slider::-webkit-slider-thumb {
     appearance: none;
     width: 14px;
@@ -383,14 +525,20 @@ select:focus {
     background: #c2410c;
 }
 
-/* Volume Control Animation */
+/* Volume Control Animation / Hoạt Ảnh Điều Khiển Âm Lượng */
 #volume-control {
     opacity: 0;
     transform: translateY(-10px);
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Adjust music controls position for mobile */
+/* =======================
+   RESPONSIVE DESIGN / THIẾT KẾ RESPONSIVE
+   Media queries for mobile adjustments
+   Media queries để điều chỉnh di động
+======================= */
+
+/* Mobile Adjustments / Điều Chỉnh Di Động */
 @media (max-width: 768px) {
     .fixed.bottom-8.right-4 {
         right: 0.5rem !important;
