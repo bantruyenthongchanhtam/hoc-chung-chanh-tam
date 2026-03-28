@@ -7,6 +7,7 @@ const Constant = (() => {
     const MESSAGE = {
         ERROR: {
             MSG_001: 'Vui lòng nhập nội dung',
+            MSG_002: 'Gửi tin nhắn thất bại. Vui lòng thử lại.',
         },
         WARNING: {},
         SUCCESS: {
@@ -22,7 +23,19 @@ const Constant = (() => {
         DATABASE: {
             DATA_EXCEL_URL: "./data/DATA.xlsx",
         }
-    }
+    };
+
+    const FORM_IDS = {
+        MODAL: 'formModal',
+        INPUT: 'messageInput',
+        FORM: 'confessionForm',
+        HIDDEN_IFRAME: 'hidden_iframe',
+    };
+
+    const FORM_LIMITS = {
+        MESSAGE_MIN_LENGTH: 1,
+        MESSAGE_MAX_LENGTH: 500, // Google Forms input limit / Giới hạn input Google Forms
+    };
 
     return Object.freeze({
         EMPTY: "",
@@ -34,6 +47,8 @@ const Constant = (() => {
         TAB_LIMITS: TAB_LIMITS,
         MESSAGE: MESSAGE,
         CONFIG: CONFIG,
+        FORM_IDS: FORM_IDS,
+        FORM_LIMITS: FORM_LIMITS,
         ALL: "Tất cả",
     });
 })();
