@@ -307,7 +307,7 @@ mark {
 }
 
 .clear-search-btn:active {
-    transform: scale(0.95);
+    color: #991b1b !important;
 }
 
 /* Image Skeleton Loading / Tải Skeleton Hình Ảnh */
