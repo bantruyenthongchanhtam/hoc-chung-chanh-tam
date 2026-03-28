@@ -2,7 +2,6 @@
  * Member Service / Dịch Vụ Thành Viên
  * Manages member data loading, caching and transformation from Excel sheets
  * Quản lý tải dữ liệu thành viên, caching và chuyển đổi từ các sheet Excel
- * @author tbh
  */
 const MemberService = (() => {
     /* =======================
@@ -10,28 +9,16 @@ const MemberService = (() => {
        Member cache storage for each year
        Lưu trữ bộ nhớ cache thành viên cho mỗi năm
     ======================= */
-    const CACHE = {
-        "Tất cả": null,
-        2025: null,
-        2024: null,
-        2023: null,
-        2022: null,
-        2021: null,
-        2020: null,
-        2019: null,
-        2018: null,
-        2017: null,
-        2016: null,
-        2015: null,
-        2014: null,
-        2013: null,
-        2012: null,
-        2011: null,
-        2010: null,
-        2009: null,
-        2008: null,
-        2007: null,
-    };
+    // Create dynamic cache from year 2007 to current year / Tạo bộ nhớ cache động từ năm 2007 đến năm hiện tại
+    const CACHE = (() => {
+        const cache = { "Tất cả": null };
+        const currentYear = new Date().getFullYear(); // Get current year / Lấy năm hiện tại
+        // Generate years from current year down to START_YEAR / Tạo ra các năm từ năm hiện tại xuống START_YEAR
+        for (let year = currentYear; year >= Constant.MEMBER.START_YEAR; year--) {
+            cache[year] = null;
+        }
+        return cache;
+    })();
 
     /**
      * Validate row structure / Xác thực cấu trúc hàng
@@ -39,7 +26,7 @@ const MemberService = (() => {
      * @returns {boolean} True if valid / Đúng nếu hợp lệ
      */
     const isValidRow = (row) => {
-        return Array.isArray(row) && row.length >= 8 && 
+        return Array.isArray(row) && row.length >= Constant.MEMBER.ROW_MIN_LENGTH && 
                row.some(cell => cell !== null && cell !== undefined && cell !== "");
     };
 
@@ -51,18 +38,19 @@ const MemberService = (() => {
      */
     const mapRowToMember = (row) => {
         if (!isValidRow(row)) {
-            throw new Error(`Invalid row structure: expected 8 fields, got ${row.length}`);
+            throw new Error(`Invalid row structure: expected ${Constant.MEMBER.ROW_MIN_LENGTH} fields, got ${row.length}`);
         }
 
+        const F = Constant.MEMBER.FIELDS; // Alias for brevity / Bí danh cho ngắn gọn
         return new Member(
-            row[0] || "", // id / Mã định danh
-            row[1] || "", // fullName / Tên đầy đủ
-            row[2] || "", // name / Tên
-            row[3] || "", // position / Vị trí
-            row[4] || "", // group / Nhóm
-            row[5] || "", // note / Ghi chú
-            row[6] || "", // image / Hình ảnh
-            row[7] || 0   // sort_order / Thứ tự sắp xếp (default to 0)
+            row[F.ID] || "",               // id / Mã định danh
+            row[F.FULL_NAME] || "",        // fullName / Tên đầy đủ
+            row[F.NAME] || "",             // name / Tên
+            row[F.POSITION] || "",         // position / Vị trí
+            row[F.GROUP] || "",            // group / Nhóm
+            row[F.NOTE] || "",             // note / Ghi chú
+            row[F.IMAGE] || "",            // image / Hình ảnh
+            row[F.SORT_ORDER] || 0         // sort_order / Thứ tự sắp xếp (default to 0)
         );
     };
 
@@ -138,6 +126,34 @@ const MemberService = (() => {
         });
 
     /**
+     * Load and get only years that have member data / Tải và lấy chỉ các năm có dữ liệu member
+     * Filters out years with no members to avoid showing empty tabs
+     * Loại bỏ các năm không có member để tránh hiển thị tab trống
+     * @returns {Promise<Array>} Array of years with data, including "Tất cả" / Mảng năm có dữ liệu, bao gồm "Tất cả"
+     */
+    const getYearsWithData = async () => {
+        try {
+            const allYearsList = getAllYears();
+            const yearsWithData = [Constant.ALL]; // Always include "Tất cả" / Luôn bao gồm "Tất cả"
+
+            // Load data for each year and check if it has members / Tải dữ liệu cho từng năm và kiểm tra nó có member không
+            for (const year of allYearsList) {
+                if (year === Constant.ALL) continue; // Skip "Tất cả" as already added / Bỏ qua "Tất cả" vì đã thêm
+
+                const members = await loadYear(year);
+                if (Array.isArray(members) && members.length > 0) {
+                    yearsWithData.push(year);
+                }
+            }
+
+            return yearsWithData;
+        } catch (error) {
+            console.error('MemberService.getYearsWithData error:', error);
+            return [Constant.ALL]; // Return at least "Tất cả" on error / Trả về ít nhất "Tất cả" khi có lỗi
+        }
+    };
+
+    /**
      * Clear cache for specific year or all years / Xóa bộ nhớ cache cho năm cụ thể hoặc tất cả năm
      * @param {string|number} year - Year to clear, or undefined to clear all / Năm để xóa, hoặc không xác định để xóa tất cả
      */
@@ -158,6 +174,7 @@ const MemberService = (() => {
     return Object.freeze({
         getMembersByYear: loadYear,
         getAllYears,
+        getYearsWithData,
         clearCache,
     });
 })();
