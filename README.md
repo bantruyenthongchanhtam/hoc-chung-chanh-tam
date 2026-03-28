@@ -1,60 +1,180 @@
-<!-- Tiêu đề chính / Main Title -->
 # Học Chúng Chánh Tâm - Tự viện Phước Duyên
 
-<!-- Mô tả ứng dụng / Application Description -->
-## Ứng dụng quản lý và tra cứu danh sách thành viên học chúng Chánh Tâm
+> "Nguyện sống bằng cả trái tim, sống và làm việc bằng tâm chân chánh"  
+> A member directory website for Tự viện Phước Duyên (Huế, Vietnam)
 
-<!-- Badges trạng thái / Status Badges -->
-![Microsoft Excel](https://img.shields.io/badge/Data_Source-Excel-217346?style=flat-square&logo=microsoft-excel)
-![Status](https://img.shields.io/badge/Status-Active-success?style=flat-square)
+## 🏗️ Cấu Trúc Dự Án (Project Structure)
 
-<!-- Liên kết website / Website Link -->
-## 🔗 Website
+Dự án đã được tổ chức lại vì khả năng bảo trì tốt hơn trong khi vẫn duy trì hiệu suất tối ưu:
 
 ```
-https://bantruyenthongchanhtam.github.io/hoc-chung-chanh-tam
+hoc-chung-chanh-tam/
+├── 📄 index.html                    # Main HTML entry point
+├── 📄 README.md                     # This file
+│
+├── 📁 src/                          # Application source code
+│   ├── 📁 core/                     # Core configuration and constants
+│   │   └── constants.js             # Centralized configuration values
+│   │
+│   ├── 📁 models/                   # Data models and entities
+│   │   └── member.js                # Member class definition
+│   │
+│   ├── 📁 services/                 # Business logic and data access
+│   │   ├── excel.service.js         # Excel file loading and caching
+│   │   └── member.service.js        # Member data operations
+│   │
+│   ├── 📁 ui/                       # UI components and utilities
+│   │   ├── modal.js                 # Confession form modal component
+│   │   └── toast.js                 # Toast notification system
+│   │
+│   └── 📁 app/                      # Main application logic
+│       └── script.js                # Main application script (~800 lines)
+│
+├── 📁 assets/                       # Static assets
+│   ├── 📁 styles/                   # CSS stylesheets
+│   │   └── style.css                # Main styles with Tailwind + custom CSS
+│   │
+│   ├── 📁 libs/                     # External JavaScript libraries
+│   │   ├── lucide.min.js            # Icon library (minified)
+│   │   └── xlsx.full.min.js         # Excel parsing library (minified)
+│   │
+│   ├── 📁 images/                   # Image assets
+│   │   └── ...                      # Logo, favicon, and UI images
+│   │
+│   └── 📁 audio/                    # Audio files
+│       └── BACKGROUND_MUSIC.MP3     # Background music
+│
+├── 📁 public/                       # Public data files
+│   ├── data.xlsx                    # Member database (Excel format)
+│   └── 📁 member-images/            # Member profile pictures
+│       ├── 2008/
+│       ├── 2009/
+│       └── ...                      # Years organized by membership year
+│
+├── 📁 config/                       # Configuration files (for future use)
+│
+└── 📁 docs/                         # Documentation (for future use)
 ```
 
-<!-- Cấu trúc thư mục / Project Structure -->
-## 📂 Cấu trúc thư mục (Project Structure)
+## 🧩 Kiến Trúc Thành Phần (Component Architecture)
 
+### Luồng Dữ Liệu (Data Flow)
 ```
-.
-├── 📁 .git/                        # Các cấu hình cho GitHub / GitHub configurations
-├── 📁 assets/                      # Tài nguyên tĩnh (Hình ảnh, Logo, Icons) / Static assets (Images, Logo, Icons)
-│   ├── 📁 css/                     # Các thành phần UI tái sử dụng / Reusable UI components
-│   │   └──style.css
-│   ├── 📁 image/                   # Các thành phần hình ảnh tái sử dụng / Reusable image components
-│   │   ├──favicon.png
-│   │   ├──logo.png
-│   │   └──thumbnail.jpg
-│   └── 📁 music/                   # Các thành phần âm thanh / Audio components
-│       └──BACKGROUND_MUSIC.MP3
-├── 📁 data/                        # Thư mục dữ liệu / Data directory
-│   └── 📊 DATA.xlsx                # File excel chứa dữ liệu thành viên / Excel file containing member data
-├── 📁 src/                         # Mã nguồn chính (Source code) / Main source code
-│   ├── 📁 common/                  # Các thành phần tái sử dụng / Reusable components
-│   │   ├──constant.js
-│   │   ├──modal.js
-│   │   └──toast.js
-│   ├── 📁 entity/                  # Đối tượng dữ liệu / Data entities
-│   │   └──member.js
-│   ├── 📁 services/                # Xử lý Logic nghiệp vụ / Business logic services
-│   │   ├──excel.service.js
-│   │   └──member.service.js
-│   └── 📄 script.js                # Xử lý Logic nghiệp vụ chính / Main business logic script
-├── index.html                      # File HTML chính / Main HTML file
-└── 📄 README.md                    # File hướng dẫn này / This documentation file
-
+index.html
+    ↓
+Core Config (constants.js)
+    ↓
+Models (member.js)
+    ↓
+Services (excel.service.js, member.service.js)
+    ↓
+UI Components (modal.js, toast.js)
+    ↓
+Main App (script.js)
 ```
 
-<!-- Công nghệ sử dụng / Technologies Used -->
-![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-![Excel](https://img.shields.io/badge/Microsoft_Excel-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white)
+### Trách Nhiệm Tập Tin (File Responsibilities)
 
-<!-- Hướng dẫn sắp xếp / Sorting Guide -->
-## 📋 Hướng dẫn sắp xếp thành viên (Sorting Guide)
+| Folder | Files | Purpose |
+|--------|-------|---------|
+| `src/core/` | `constants.js` | Centralized configuration, API URLs, cache settings, member field mappings |
+| `src/models/` | `member.js` | Member class definition with 8 properties (id, fullName, name, position, group, note, img, sortOrder) |
+| `src/services/` | `excel.service.js` | Loads and caches Excel files with 5-minute TTL |
+| | `member.service.js` | Handles member data operations, filtering, dynamic year detection |
+| `src/ui/` | `modal.js` | Confession form modal (Google Forms integration) |
+| | `toast.js` | Notification system with 4 types (success, error, warning, info) |
+| `src/app/` | `script.js` | Main application logic (search, filtering, pagination, music player) |
+| `assets/styles/` | `style.css` | Tailwind CSS + custom styles for components |
+| `assets/libs/` | `lucide.min.js`, `xlsx.full.min.js` | External libraries |
+| `public/` | `data.xlsx` | Member database |
+
+## ⚙️ Cấu Hình (Configuration)
+
+All magic numbers and URLs are centralized in `src/core/constants.js`:
+
+```javascript
+// Database
+DATA_EXCEL_URL: "./public/data.xlsx"
+
+// UI
+DEFAULT_AVATAR: "./assets/images/user.webp"
+ITEMS_PER_PAGE: 8
+
+// Member data
+START_YEAR: 2008
+ROW_MIN_LENGTH: 8
+FIELDS: { ID: 0, FULL_NAME: 1, ... }
+
+// Cache
+CACHE_TIME_MS: 5 * 60 * 1000  // 5 minutes
+```
+
+## 🚀 Tối Ưu Hóa Tải (Loader Optimization)
+
+The project maintains **4-5 HTTP requests** for optimal GitHub Pages performance:
+
+1. `index.html` (entry)
+2. `constants.js` (config)
+3. `bundle.js` (models + services + UI + app)
+4. `style.css` (styles)
+5. `data.xlsx` (dynamic data)
+
+This approach balances **code organization** with **loading speed**.
+
+## 📊 Định Dạng Dữ Liệu (Data Format - Excel)
+
+The `data.xlsx` file contains member information:
+
+| ID | Full Name | Name | Position | Group | Note | Image | Sort Order |
+|----|-----------|------|----------|-------|------|-------|------------|
+| 1 | Thích Nhân Đức | Nhân Đức | Trụ trì | Tổ 1 | Notes | 2008/01.jpg | 1 |
+| 2 | ... | ... | ... | ... | ... | ... | ... |
+
+- **Image paths** are stored as relative paths: `2008/01.jpg` or similar
+- **Dynamic year detection** happens via `MemberService.getYearsWithData()`
+- Only years with actual member records appear in the UI
+
+## 🎨 Các Tính Năng Giao Diện (UI Features)
+
+### Components
+- **Profile Cards**: Responsive grid layout with hover effects
+- **Year Tabs**: Scrollable tab navigation with smart pagination
+- **Search**: Diacritic-insensitive Vietnamese text search
+- **Filters**: Group filtering and sort options
+- **Pagination**: Configurable items-per-page
+- **Modal**: Confession form with Google Forms integration
+- **Toast**: Styled notifications for user feedback
+- **Music Player**: Background audio with volume control
+
+### Styling
+- **Framework**: Tailwind CSS (CDN)
+- **Icons**: Lucide (minified)
+- **Colors**: Orange-based theme with custom CSS variables
+- **Animations**: Smooth transitions and hover effects
+- **Responsive**: Mobile-first design
+
+## 🔧 Hướng dẫn Phát Triển (Development Guide)
+
+### Adding New Members
+1. Edit `public/data.xlsx`
+2. Add rows with ID, name, position, group, note, image path, sort order
+3. Images should be placed in `public/member-images/{year}/`
+4. Reload the page - new members appear automatically
+
+### Modifying Constants
+Edit `src/core/constants.js` to change:
+- API URLs (`DATA_EXCEL_URL`, Google Form ID)
+- UI defaults (`ITEMS_PER_PAGE`, `DEFAULT_AVATAR`)
+- Member field mappings (`FIELDS`)
+- Cache duration (`CACHE_TIME_MS`)
+
+### Debugging
+- Check browser console for errors
+- Verify `DATA_EXCEL_URL` is accessible (should be in `public/`)
+- Confirm image paths in Excel match actual file locations
+- Check cache is invalidating properly (5-min refresh)
+
+## 📋 Hướng dẫn sắp xếp (Sorting Guide)
 
 Thứ tự ưu tiên sắp xếp (sortOrder) như sau:
 
@@ -72,8 +192,31 @@ Thứ tự ưu tiên sắp xếp (sortOrder) như sau:
 | 9      | Thành viên không thường trực |
 | 10     | Thành viên không rõ |
 
-Thứ tự này được sử dụng để sắp xếp thành viên theo vai trò trong tổ chức.
+## 📈 Performance Notes
+
+### Load Time Optimization
+- **Minified libraries**: lucide and xlsx are pre-minified
+- **Cache strategy**: Excel data cached for 5 minutes
+- **HTTP requests**: Minimal for GitHub Pages (4-5 total)
+- **CSS**: Tailwind CDN used (development) or can be built locally
+
+### Code Organization Trade-offs
+- **Pro**: Logical folder structure improves maintainability
+- **Con**: Single file (script.js ~800 lines) might benefit from modularization
+- **Decision**: Kept monolithic to avoid HTTP overhead on GitHub Pages
+
+## 🔐 Security Notes
+
+- **XSS Prevention**: DOM creation methods used instead of innerHTML
+- **Form Submission**: Google Forms integration for user feedback
+- **Data Storage**: No sensitive data stored locally
+- **CSV/Excel**: Handled safely via XLSX library
 
 ---
-<!-- Bản quyền / Copyright -->
+
+**Last Updated**: 2026 
+**Framework**: Vanilla JavaScript + Tailwind CSS  
+**Deployment**: GitHub Pages  
+**License**: MIT
+
 © 2026 Ban Truyền Thông Chánh Tâm

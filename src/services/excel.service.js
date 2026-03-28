@@ -12,7 +12,7 @@ const ExcelService = (() => {
        Bộ nhớ cache sổ làm việc và theo dõi lỗi
     ======================= */
     let workbookCache = null;
-    const MAX_CACHE_TIME = 5 * 60 * 1000; // 5 minute cache TTL / Bộ nhớ cache TTL 5 phút
+    const MAX_CACHE_TIME = Constant.CONFIG.DATABASE.CACHE_TIME_MS; // Excel workbook cache TTL / Bộ nhớ cache sổ làm việc TTL
     let cacheTimestamp = null;
 
     /* =======================
