@@ -127,7 +127,7 @@ The `data.xlsx` file contains member information:
 
 | ID | Full Name | Name | Position | Group | Note | Image | Sort Order |
 |----|-----------|------|----------|-------|------|-------|------------|
-| 1 | Thích Nhân Đức | Nhân Đức | Trụ trì | Tổ 1 | Notes | 2008/01.jpg | 1 |
+| 1 | Nguyễn Văn A | A | Ban chấp hành | Tâm An | Notes | 2008/01.jpg | 4 |
 | 2 | ... | ... | ... | ... | ... | ... | ... |
 
 - **Image paths** are stored as relative paths: `2008/01.jpg` or similar
