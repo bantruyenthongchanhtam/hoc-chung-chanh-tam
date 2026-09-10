@@ -6,19 +6,11 @@
 const MemberService = (() => {
     /* =======================
        STATE / TRẠNG THÁI
-       Member cache storage for each year
-       Lưu trữ bộ nhớ cache thành viên cho mỗi năm
+       Cache for the full member list loaded from the "DS" sheet
+       Bộ nhớ cache cho danh sách thành viên đầy đủ tải từ sheet "DS"
     ======================= */
-    // Create dynamic cache from year 2007 to current year / Tạo bộ nhớ cache động từ năm 2007 đến năm hiện tại
-    const CACHE = (() => {
-        const cache = { "Tất cả": null };
-        const currentYear = new Date().getFullYear(); // Get current year / Lấy năm hiện tại
-        // Generate years from current year down to START_YEAR / Tạo ra các năm từ năm hiện tại xuống START_YEAR
-        for (let year = currentYear; year >= Constant.MEMBER.START_YEAR; year--) {
-            cache[year] = null;
-        }
-        return cache;
-    })();
+    let membersCache = null; // All members from the single "DS" sheet / Tất cả thành viên từ sheet "DS" duy nhất
+    let yearsCache = null; // Unique years derived from members / Các năm duy nhất trích xuất từ thành viên
 
     /**
      * Validate row structure / Xác thực cấu trúc hàng
@@ -31,8 +23,17 @@ const MemberService = (() => {
     };
 
     /**
+     * Check whether a year value is a valid number / Kiểm tra giá trị năm có phải là số hợp lệ
+     * @param {*} year - Year value / Giá trị năm
+     * @returns {boolean} True if numeric year / Đúng nếu là năm dạng số
+     */
+    const isValidYear = (year) => {
+        return year !== null && year !== undefined && year !== "" && !Number.isNaN(Number(year));
+    };
+
+    /**
      * Map row to Member object / Ánh xạ hàng thành đối tượng Member
-     * @param {Array} row - Row data with 8 elements / Dữ liệu hàng có 8 phần tử
+     * @param {Array} row - Row data with 9 elements / Dữ liệu hàng có 9 phần tử
      * @returns {Member} Member object / Đối tượng Member
      * @throws {Error} If row structure is invalid / Nếu cấu trúc hàng không hợp lệ
      */
@@ -48,6 +49,7 @@ const MemberService = (() => {
             row[F.NAME] || "",             // name / Tên
             row[F.POSITION] || "",         // position / Vị trí
             row[F.GROUP] || "",            // group / Nhóm
+            row[F.YEAR] || "",             // year / Năm kết nạp
             row[F.NOTE] || "",             // note / Ghi chú
             row[F.IMAGE] || "",            // image / Hình ảnh
             row[F.SORT_ORDER] || 0         // sort_order / Thứ tự sắp xếp (default to 0)
@@ -55,37 +57,21 @@ const MemberService = (() => {
     };
 
     /**
-     * Load members for specific year with caching / Tải thành viên cho năm cụ thể với caching
-     * @param {string|number} year - Year to load / Năm để tải
-     * @returns {Promise<Array<Member>>} Array of members sorted by order / Mảng thành viên được sắp xếp theo thứ tự
+     * Load and cache all members from the "DS" sheet / Tải và lưu bộ nhớ cache tất cả thành viên từ sheet "DS"
+     * @returns {Promise<Array<Member>>} Array of all members / Mảng tất cả thành viên
      */
-    const loadYear = async (year) => {
+    const loadAllMembers = async () => {
         try {
-            if (CACHE[year]) return CACHE[year];
+            if (membersCache) return membersCache;
 
-            let rows;
+            const rows = await ExcelService.readSheet(Constant.CONFIG.DATABASE.SHEET_NAME);
 
-            if (year === Constant.ALL) {
-                rows = await ExcelService.readAllSheet();
-            } else {
-                // Convert year to string for sheet lookup / Chuyển đổi năm thành chuỗi để tìm kiếm sheet
-                rows = await ExcelService.readSheet(String(year));
+            if (!Array.isArray(rows) || rows.length === 0) {
+                membersCache = [];
+                return membersCache;
             }
 
-            // Validate rows data / Xác thực dữ liệu hàng
-            if (!Array.isArray(rows)) {
-                console.warn(`ExcelService.readSheet returned non-array for year ${year}`);
-                CACHE[year] = [];
-                return [];
-            }
-
-            if (rows.length === 0) {
-                CACHE[year] = [];
-                return [];
-            }
-
-            // Map and filter rows, with error handling for each row / Ánh xạ và lọc hàng, xử lý lỗi cho từng hàng
-            const members = rows
+            membersCache = rows
                 .filter(row => {
                     try {
                         return isValidRow(row);
@@ -105,48 +91,72 @@ const MemberService = (() => {
                 .filter(member => member !== null) // Remove failed mappings / Xóa các ánh xạ thất bại
                 .sort((a, b) => a.sortOrder - b.sortOrder); // Sort by order / Sắp xếp theo thứ tự
 
-            CACHE[year] = members;
-            return members;
+            return membersCache;
+        } catch (error) {
+            console.error('MemberService.loadAllMembers error:', error);
+            membersCache = [];
+            return membersCache;
+        }
+    };
+
+    /**
+     * Load members for specific year (or all) by filtering the cached member list
+     * Tải thành viên cho năm cụ thể (hoặc tất cả) bằng cách lọc danh sách thành viên đã lưu cache
+     * @param {string|number} year - Year to load, or Constant.ALL / Năm để tải, hoặc Constant.ALL
+     * @returns {Promise<Array<Member>>} Array of members sorted by order / Mảng thành viên được sắp xếp theo thứ tự
+     */
+    const loadYear = async (year) => {
+        try {
+            const members = await loadAllMembers();
+
+            if (year === Constant.ALL) return members;
+
+            if (year === Constant.UNKNOWN_YEAR) {
+                return members.filter(member => !isValidYear(member.year));
+            }
+
+            return members.filter(member => String(member.year) === String(year));
         } catch (error) {
             console.error(`MemberService.loadYear(${year}) error:`, error);
-            CACHE[year] = [];
             return [];
         }
     };
 
     /**
-     * Get all years in sorted order / Lấy tất cả năm theo thứ tự sắp xếp
-     * @returns {Array} Array of years with "Tất cả" first, then years descending / Mảng năm với "Tất cả" trước, sau đó năm giảm dần
+     * Get all unique years present in the data, sorted descending / Lấy tất cả năm duy nhất có trong dữ liệu, sắp xếp giảm dần
+     * @returns {Array} Array of years: "Tất cả", then years descending, then "Không rõ" if present / Mảng năm: "Tất cả", sau đó năm giảm dần, rồi "Không rõ" nếu có
      */
-    const getAllYears = () =>
-        Object.keys(CACHE).sort((a, b) => {
-            if (a === Constant.ALL) return -1; // "Tất cả" always first / "Tất cả" luôn đầu tiên
-            if (b === Constant.ALL) return 1;
-            return Number(b) - Number(a); // Years in descending order / Năm theo thứ tự giảm dần
-        });
+    const getAllYears = async () => {
+        if (yearsCache) return yearsCache;
+
+        const members = await loadAllMembers();
+        const uniqueYears = [...new Set(
+            members
+                .map(member => member.year)
+                .filter(isValidYear)
+        )];
+
+        uniqueYears.sort((a, b) => Number(b) - Number(a)); // Years in descending order / Năm theo thứ tự giảm dần
+
+        const hasUnknownYear = members.some(member => !isValidYear(member.year));
+
+        yearsCache = [
+            Constant.ALL, // "Tất cả" always first / "Tất cả" luôn đầu tiên
+            ...uniqueYears,
+            ...(hasUnknownYear ? [Constant.UNKNOWN_YEAR] : []), // "Không rõ" always last / "Không rõ" luôn cuối cùng
+        ];
+        return yearsCache;
+    };
 
     /**
-     * Load and get only years that have member data / Tải và lấy chỉ các năm có dữ liệu member
-     * Filters out years with no members to avoid showing empty tabs
-     * Loại bỏ các năm không có member để tránh hiển thị tab trống
+     * Get only years that actually have member data / Lấy chỉ các năm thực sự có dữ liệu thành viên
+     * Kept for backward compatibility with existing UI code
+     * Giữ lại để tương thích ngược với code giao diện hiện tại
      * @returns {Promise<Array>} Array of years with data, including "Tất cả" / Mảng năm có dữ liệu, bao gồm "Tất cả"
      */
     const getYearsWithData = async () => {
         try {
-            const allYearsList = getAllYears();
-            const yearsWithData = [Constant.ALL]; // Always include "Tất cả" / Luôn bao gồm "Tất cả"
-
-            // Load data for each year and check if it has members / Tải dữ liệu cho từng năm và kiểm tra nó có member không
-            for (const year of allYearsList) {
-                if (year === Constant.ALL) continue; // Skip "Tất cả" as already added / Bỏ qua "Tất cả" vì đã thêm
-
-                const members = await loadYear(year);
-                if (Array.isArray(members) && members.length > 0) {
-                    yearsWithData.push(year);
-                }
-            }
-
-            return yearsWithData;
+            return await getAllYears();
         } catch (error) {
             console.error('MemberService.getYearsWithData error:', error);
             return [Constant.ALL]; // Return at least "Tất cả" on error / Trả về ít nhất "Tất cả" khi có lỗi
@@ -154,17 +164,11 @@ const MemberService = (() => {
     };
 
     /**
-     * Clear cache for specific year or all years / Xóa bộ nhớ cache cho năm cụ thể hoặc tất cả năm
-     * @param {string|number} year - Year to clear, or undefined to clear all / Năm để xóa, hoặc không xác định để xóa tất cả
+     * Clear cache manually / Xóa bộ nhớ cache theo cách thủ công
      */
-    const clearCache = (year) => {
-        if (year !== undefined) {
-            CACHE[year] = null;
-        } else {
-            Object.keys(CACHE).forEach(key => {
-                CACHE[key] = null;
-            });
-        }
+    const clearCache = () => {
+        membersCache = null;
+        yearsCache = null;
         // Clear Excel service cache as well / Cũng xóa bộ nhớ cache dịch vụ Excel
         if (ExcelService.clearCache) {
             ExcelService.clearCache();

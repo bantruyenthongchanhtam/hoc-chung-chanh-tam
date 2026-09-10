@@ -107,39 +107,6 @@ const ExcelService = (() => {
     };
 
     /**
-     * Get data from all sheets with validation / Lấy dữ liệu từ tất cả sheet với xác thực
-     * @returns {Promise<Array>} Combined array of all rows / Mảng kết hợp của tất cả hàng
-     */
-    const getDataAllSheet = async () => {
-        try {
-            const workbook = await loadWorkbook();
-
-            if (!workbook.SheetNames || !Array.isArray(workbook.SheetNames)) {
-                console.warn('Invalid workbook structure');
-                return [];
-            }
-
-            return workbook.SheetNames.flatMap((name) => {
-                try {
-                    const sheet = workbook.Sheets[name];
-                    if (!sheet) return [];
-
-                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                    
-                    if (!Array.isArray(rows) || rows.length <= 1) return [];
-                    return rows.slice(1);
-                } catch (sheetError) {
-                    console.warn(`Error reading sheet "${name}":`, sheetError);
-                    return [];
-                }
-            });
-        } catch (error) {
-            console.error('ExcelService.getDataAllSheet error:', error);
-            return [];
-        }
-    };
-
-    /**
      * Clear cache manually / Xóa bộ nhớ cache theo cách thủ công
      */
     const clearCache = () => {
@@ -152,7 +119,6 @@ const ExcelService = (() => {
     ======================= */
     return Object.freeze({
         readSheet: getSheet,
-        readAllSheet: getDataAllSheet,
         clearCache,
     });
 })();

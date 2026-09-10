@@ -23,6 +23,7 @@ const Constant = (() => {
         DATABASE: {
             DATA_EXCEL_URL: "./public/data.xlsx", // Updated path / Đã cập nhật đường dẫn
             CACHE_TIME_MS: 5 * 60 * 1000, // Excel workbook cache TTL (5 minutes) / Bộ nhớ cache sổ làm việc Excel (5 phút)
+            SHEET_NAME: "DS", // Single sheet name holding all member data / Tên sheet duy nhất chứa toàn bộ dữ liệu thành viên
         }
     };
 
@@ -49,13 +50,14 @@ const Constant = (() => {
             NAME: 2,            // name / Tên
             POSITION: 3,        // position / Vị trí
             GROUP: 4,           // group / Nhóm
-            NOTE: 5,            // note / Ghi chú
-            IMAGE: 6,           // image / Hình ảnh
-            SORT_ORDER: 7,      // sort_order / Thứ tự sắp xếp
+            YEAR: 5,            // year / Năm kết nạp
+            NOTE: 6,            // note / Ghi chú
+            IMAGE: 7,           // image / Hình ảnh
+            SORT_ORDER: 8,      // sort_order / Thứ tự sắp xếp
         },
         
         // Row validation / Xác thực hàng
-        ROW_MIN_LENGTH: 8, // Minimum number of fields required / Số lượng trường tối thiểu yêu cầu
+        ROW_MIN_LENGTH: 9, // Minimum number of fields required / Số lượng trường tối thiểu yêu cầu
     };
 
     return Object.freeze({
@@ -72,5 +74,6 @@ const Constant = (() => {
         FORM_LIMITS: FORM_LIMITS,
         MEMBER: MEMBER,
         ALL: "Tất cả",
+        UNKNOWN_YEAR: "Không rõ", // Label for members without a valid year / Nhãn cho thành viên không có năm hợp lệ
     });
 })();
