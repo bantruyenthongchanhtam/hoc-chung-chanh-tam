@@ -91,42 +91,42 @@ const memoCache = {
     }
 };
 
+// Map of Vietnamese characters with diacritics to their base characters, built once / Bản đồ ký tự Tiếng Việt có dấu, chỉ tạo một lần
+const DIACRITICS_MAP = {
+    'á': 'a', 'à': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a',
+    'ă': 'a', 'ắ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a',
+    'â': 'a', 'ấ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a',
+    'é': 'e', 'è': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ẹ': 'e',
+    'ê': 'e', 'ế': 'e', 'ề': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e',
+    'í': 'i', 'ì': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i',
+    'ó': 'o', 'ò': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o',
+    'ô': 'o', 'ố': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o',
+    'ơ': 'o', 'ớ': 'o', 'ờ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o',
+    'ú': 'u', 'ù': 'u', 'ủ': 'u', 'ũ': 'u', 'ụ': 'u',
+    'ư': 'u', 'ứ': 'u', 'ừ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u',
+    'ý': 'y', 'ỳ': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y',
+    'đ': 'd',
+    'Á': 'A', 'À': 'A', 'Ả': 'A', 'Ã': 'A', 'Ạ': 'A',
+    'Ă': 'A', 'Ắ': 'A', 'Ằ': 'A', 'Ẳ': 'A', 'Ẵ': 'A', 'Ặ': 'A',
+    'Â': 'A', 'Ấ': 'A', 'Ầ': 'A', 'Ẩ': 'A', 'Ẫ': 'A', 'Ậ': 'A',
+    'É': 'E', 'È': 'E', 'Ẻ': 'E', 'Ẽ': 'E', 'Ẹ': 'E',
+    'Ê': 'E', 'Ế': 'E', 'Ề': 'E', 'Ể': 'E', 'Ễ': 'E', 'Ệ': 'E',
+    'Í': 'I', 'Ì': 'I', 'Ỉ': 'I', 'Ĩ': 'I', 'Ị': 'I',
+    'Ó': 'O', 'Ò': 'O', 'Ỏ': 'O', 'Õ': 'O', 'Ọ': 'O',
+    'Ô': 'O', 'Ố': 'O', 'Ồ': 'O', 'Ổ': 'O', 'Ỗ': 'O', 'Ộ': 'O',
+    'Ơ': 'O', 'Ớ': 'O', 'Ờ': 'O', 'Ở': 'O', 'Ỡ': 'O', 'Ợ': 'O',
+    'Ú': 'U', 'Ù': 'U', 'Ủ': 'U', 'Ũ': 'U', 'Ụ': 'U',
+    'Ư': 'U', 'Ứ': 'U', 'Ừ': 'U', 'Ử': 'U', 'Ữ': 'U', 'Ự': 'U',
+    'Ý': 'Y', 'Ỳ': 'Y', 'Ỷ': 'Y', 'Ỹ': 'Y', 'Ỵ': 'Y',
+    'Đ': 'D'
+};
+// Regex matching only the diacritic characters above, built once / Regex chỉ khớp ký tự có dấu ở trên, chỉ tạo một lần
+const DIACRITICS_REGEX = new RegExp(`[${Object.keys(DIACRITICS_MAP).join('')}]`, 'g');
+
 // Remove Vietnamese diacritical marks for diacritic-insensitive search / Xóa dấu Tiếng Việt để tìm kiếm không phân biệt dấu
 function removeDiacritics(text) {
     if (!text) return '';
-
-    // Map of Vietnamese characters with diacritics to their base characters
-    // Bản đồ các ký tự Tiếng Việt có dấu thành ký tự cơ sở
-    const diacriticsMap = {
-        'á': 'a', 'à': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a',
-        'ă': 'a', 'ắ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a',
-        'â': 'a', 'ấ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a',
-        'é': 'e', 'è': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ẹ': 'e',
-        'ê': 'e', 'ế': 'e', 'ề': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e',
-        'í': 'i', 'ì': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i',
-        'ó': 'o', 'ò': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o',
-        'ô': 'o', 'ố': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o',
-        'ơ': 'o', 'ớ': 'o', 'ờ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o',
-        'ú': 'u', 'ù': 'u', 'ủ': 'u', 'ũ': 'u', 'ụ': 'u',
-        'ư': 'u', 'ứ': 'u', 'ừ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u',
-        'ý': 'y', 'ỳ': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y',
-        'đ': 'd',
-        'Á': 'A', 'À': 'A', 'Ả': 'A', 'Ã': 'A', 'Ạ': 'A',
-        'Ă': 'A', 'Ắ': 'A', 'Ằ': 'A', 'Ẳ': 'A', 'Ẵ': 'A', 'Ặ': 'A',
-        'Â': 'A', 'Ấ': 'A', 'Ầ': 'A', 'Ẩ': 'A', 'Ẫ': 'A', 'Ậ': 'A',
-        'É': 'E', 'È': 'E', 'Ẻ': 'E', 'Ẽ': 'E', 'Ẹ': 'E',
-        'Ê': 'E', 'Ế': 'E', 'Ề': 'E', 'Ể': 'E', 'Ễ': 'E', 'Ệ': 'E',
-        'Í': 'I', 'Ì': 'I', 'Ỉ': 'I', 'Ĩ': 'I', 'Ị': 'I',
-        'Ó': 'O', 'Ò': 'O', 'Ỏ': 'O', 'Õ': 'O', 'Ọ': 'O',
-        'Ô': 'O', 'Ố': 'O', 'Ồ': 'O', 'Ổ': 'O', 'Ỗ': 'O', 'Ộ': 'O',
-        'Ơ': 'O', 'Ớ': 'O', 'Ờ': 'O', 'Ở': 'O', 'Ỡ': 'O', 'Ợ': 'O',
-        'Ú': 'U', 'Ù': 'U', 'Ủ': 'U', 'Ũ': 'U', 'Ụ': 'U',
-        'Ư': 'U', 'Ứ': 'U', 'Ừ': 'U', 'Ử': 'U', 'Ữ': 'U', 'Ự': 'U',
-        'Ý': 'Y', 'Ỳ': 'Y', 'Ỷ': 'Y', 'Ỹ': 'Y', 'Ỵ': 'Y',
-        'Đ': 'D'
-    };
-
-    return text.split('').map(char => diacriticsMap[char] || char).join('');
+    return text.replace(DIACRITICS_REGEX, char => DIACRITICS_MAP[char]);
 }
 
 // Exact search with diacritic support - no fuzzy matching / Tìm kiếm chính xác với hỗ trợ dấu - không khớp mờ
@@ -531,19 +531,26 @@ async function updateDisplay() {
     renderPaginationUI(totalPages, totalItems, startIdx, paginatedItems.length);
 }
 
+// Cache of unique groups per year, avoids recomputing on every search/sort/page change / Bộ nhớ cache nhóm duy nhất theo năm, tránh tính lại mỗi khi tìm kiếm/sắp xếp/đổi trang
+const groupOptionsCache = { year: undefined, groups: [] };
+
 // Update group filter options based on available groups / Cập nhật tùy chọn bộ lọc nhóm dựa trên các nhóm khả dụng
 function updateGroupOptions(members) {
     const select = DOM_CACHE.groupFilter;
     const currentVal = select.value;
 
-    // Extract unique groups from all members / Trích xuất các nhóm duy nhất từ tất cả thành viên
-    const groups = [
-        ...new Set(
-            members.flatMap((m) =>
-                m.group ? m.group.split(",").map((g) => g.trim()) : []
-            )
-        ),
-    ];
+    // Only recompute groups when the year changes, not on every render / Chỉ tính lại nhóm khi năm thay đổi, không phải mỗi lần hiển thị
+    if (groupOptionsCache.year !== currentYear) {
+        groupOptionsCache.year = currentYear;
+        groupOptionsCache.groups = [
+            ...new Set(
+                members.flatMap((m) =>
+                    m.group ? m.group.split(",").map((g) => g.trim()) : []
+                )
+            ),
+        ];
+    }
+    const groups = groupOptionsCache.groups;
 
     // Rebuild group options / Xây dựng lại các tùy chọn nhóm
     select.innerHTML = '<option value="all">Tất cả Nhóm</option>';
@@ -667,6 +674,7 @@ function applyFilters(members) {
         // Use exact matching for precise search / Sử dụng khớp chính xác để tìm kiếm chính xác
         const matchesSearch = !searchQuery ||
             exactMatch(searchQuery, item.fullName) ||
+            exactMatch(searchQuery, item.nickName) ||
             exactMatch(searchQuery, item.position) ||
             exactMatch(searchQuery, item.group) ||
             exactMatch(searchQuery, item.note);
@@ -693,10 +701,13 @@ function applyFilters(members) {
 ======================= */
 // Sort members by name based on sort type with memoization / Sắp xếp thành viên theo tên dựa trên loại sắp xếp với memoization
 function applySort(members) {
-    // Use memoization for sort operations / Sử dụng memoization cho các hoạt động sắp xếp
+    // Use memoization keyed by sort type + a reference check on the input array
+    // (cheap O(1) check instead of JSON.stringify, which is O(n) and gets slow as data grows)
+    // Sử dụng memoization theo loại sắp xếp + kiểm tra tham chiếu mảng đầu vào (O(1) thay vì JSON.stringify tốn O(n))
     const cacheKey = sortType;
-    if (memoCache.sorts[cacheKey] && JSON.stringify(memoCache.sorts[cacheKey]) === JSON.stringify(members)) {
-        return memoCache.sorts[cacheKey];
+    const cached = memoCache.sorts[cacheKey];
+    if (cached && cached.inputRef === members) {
+        return cached.result;
     }
 
     let result = members;
@@ -717,8 +728,8 @@ function applySort(members) {
         });
     }
 
-    // Cache the result / Lưu kết quả vào bộ nhớ cache
-    memoCache.sorts[cacheKey] = result;
+    // Cache the result along with the input reference used to produce it / Lưu kết quả cùng tham chiếu đầu vào đã dùng
+    memoCache.sorts[cacheKey] = { inputRef: members, result };
     return result;
 }
 
@@ -734,7 +745,10 @@ function renderMemberCard(m) {
         m.img && m.img.trim() !== "" ? m.img : Constant.DEFAULT_AVATAR;
 
     // Highlight search terms in member name / Làm nổi bật các thuật ngữ tìm kiếm trong tên thành viên
-    const highlightedName = highlightText(m.fullName, searchQuery);
+    const displayName = m.nickName && m.nickName.trim() !== ""
+        ? `${m.fullName} (${m.nickName})`
+        : m.fullName;
+    const highlightedName = highlightText(displayName, searchQuery);
     const highlightedPosition = highlightText(m.position, searchQuery);
 
     return `

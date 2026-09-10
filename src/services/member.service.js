@@ -33,7 +33,7 @@ const MemberService = (() => {
 
     /**
      * Map row to Member object / Ánh xạ hàng thành đối tượng Member
-     * @param {Array} row - Row data with 9 elements / Dữ liệu hàng có 9 phần tử
+     * @param {Array} row - Row data with 10 elements / Dữ liệu hàng có 10 phần tử
      * @returns {Member} Member object / Đối tượng Member
      * @throws {Error} If row structure is invalid / Nếu cấu trúc hàng không hợp lệ
      */
@@ -46,6 +46,7 @@ const MemberService = (() => {
         return new Member(
             row[F.ID] || "",               // id / Mã định danh
             row[F.FULL_NAME] || "",        // fullName / Tên đầy đủ
+            row[F.NICK_NAME] || "",        // nickName / Biệt danh
             row[F.NAME] || "",             // name / Tên
             row[F.POSITION] || "",         // position / Vị trí
             row[F.GROUP] || "",            // group / Nhóm

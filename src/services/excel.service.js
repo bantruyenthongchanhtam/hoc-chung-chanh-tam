@@ -42,8 +42,9 @@ const ExcelService = (() => {
             
             if (workbookCache) return workbookCache;
 
+            // "default" cho phép trình duyệt dùng cache HTTP có điều kiện (304), tránh tải lại toàn bộ file mỗi lần
             const response = await fetch(EXCEL_URL, {
-                cache: "no-store",
+                cache: "default",
             });
             
             if (!response.ok) {

@@ -12,6 +12,7 @@ class Member {
      * @param {string} id - Unique identifier / Mã định danh duy nhất
      * @param {string} fullName - Full name with diacritics / Tên đầy đủ có dấu
      * @param {string} name - Short name / Tên rút gọn
+        this.nickName = nickName;               // Nick name / Biệt danh
      * @param {string} position - Job position / Chức vụ
      * @param {string} group - Organization group / Nhóm tổ chức
      * @param {string|number} year - Year of admission / Năm kết nạp
@@ -19,10 +20,11 @@ class Member {
      * @param {string} img - Avatar image URL / URL hình ảnh đại diện
      * @param {number} sortOrder - Display order index / Chỉ số thứ tự hiển thị
      */
-    constructor(id, fullName, name, position, group, year, note, img, sortOrder) {
+    constructor(id, fullName, name, nickName, position, group, year, note, img, sortOrder) {
         this.id = id;                           // Unique identifier / Mã định danh duy nhất
         this.fullName = fullName;               // Full name with diacritics / Tên đầy đủ có dấu
         this.name = name;                       // Short name / Tên rút gọn
+        this.nickName = nickName;               // Nick name / Biệt danh
         this.position = position;               // Job position / Chức vụ
         this.group = group;                     // Organization group / Nhóm tổ chức
         this.year = year;                       // Year of admission / Năm kết nạp
