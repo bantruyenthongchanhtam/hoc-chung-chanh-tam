@@ -124,19 +124,10 @@ const Modal = (() => {
             form.appendChild(hiddenInput);
             document.body.appendChild(form);
 
-            // Submit form with error handling / Gửi biểu mẫu với xử lý lỗi
-            await new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    reject(new Error('Form submission timeout'));
-                }, 10000); // 10 second timeout / Hết thời gian 10 giây
-
-                form.onsubmit = () => {
-                    clearTimeout(timeout);
-                    resolve();
-                };
-
-                form.submit();
-            });
+            // form.submit() (gọi bằng JS) không kích hoạt sự kiện "submit" nên không thể
+            // chờ form.onsubmit; chỉ có thể gửi rồi đợi một khoảng ngắn để iframe bắt đầu tải
+            form.submit();
+            await new Promise((resolve) => setTimeout(resolve, 600));
 
             // Cleanup form / Dọn dẹp biểu mẫu
             document.body.removeChild(form);

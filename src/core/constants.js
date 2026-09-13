@@ -47,17 +47,18 @@ const Constant = (() => {
         FIELDS: {
             ID: 0,              // id / Mã định danh
             FULL_NAME: 1,       // fullName / Tên đầy đủ
-            NAME: 2,            // name / Tên
-            POSITION: 3,        // position / Vị trí
-            GROUP: 4,           // group / Nhóm
-            YEAR: 5,            // year / Năm kết nạp
-            NOTE: 6,            // note / Ghi chú
-            IMAGE: 7,           // image / Hình ảnh
-            SORT_ORDER: 8,      // sort_order / Thứ tự sắp xếp
+            NICK_NAME: 2,       // nickName / Biệt danh
+            NAME: 3,            // name / Tên
+            POSITION: 4,        // position / Vị trí
+            GROUP: 5,           // group / Nhóm
+            YEAR: 6,            // year / Năm kết nạp
+            NOTE: 7,            // note / Ghi chú
+            IMAGE: 8,           // image / Hình ảnh
+            SORT_ORDER: 9,      // sort_order / Thứ tự sắp xếp
         },
         
         // Row validation / Xác thực hàng
-        ROW_MIN_LENGTH: 9, // Minimum number of fields required / Số lượng trường tối thiểu yêu cầu
+        ROW_MIN_LENGTH: 10, // Minimum number of fields required / Số lượng trường tối thiểu yêu cầu
     };
 
     return Object.freeze({
@@ -75,5 +76,6 @@ const Constant = (() => {
         MEMBER: MEMBER,
         ALL: "Tất cả",
         UNKNOWN_YEAR: "Không rõ", // Label for members without a valid year / Nhãn cho thành viên không có năm hợp lệ
+        MEMBER_IMAGE_PATH: "./public/member-images/",
     });
 })();
