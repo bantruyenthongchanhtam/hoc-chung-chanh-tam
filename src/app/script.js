@@ -755,6 +755,7 @@ function renderMemberCard(m) {
         <div class="profile-card fade-in">
             <div class="image-outer img-skeleton">
                 <img src="${imageSrc}" loading="lazy" decoding="async" alt="${m.fullName}" class="profile-img opacity-0" width="150" height="150"
+                onerror="this.onerror=null; this.src='${Constant.DEFAULT_AVATAR}';"
                 onload="this.classList.remove('opacity-0'); this.parentElement.classList.remove('img-skeleton');">
             </div>
             <h2 class="text-lg font-bold text-stone-800 mb-1 text-center">${highlightedName}</h2>
