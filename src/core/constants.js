@@ -76,5 +76,6 @@ const Constant = (() => {
         MEMBER: MEMBER,
         ALL: "Tất cả",
         UNKNOWN_YEAR: "Không rõ", // Label for members without a valid year / Nhãn cho thành viên không có năm hợp lệ
+        MEMBER_IMAGE_PATH: "./public/member-images/",
     });
 })();

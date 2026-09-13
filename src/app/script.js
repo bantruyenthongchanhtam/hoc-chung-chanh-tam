@@ -740,9 +740,9 @@ function applySort(members) {
 ======================= */
 // Render a single member profile card with search highlighting / Hiển thị một thẻ hồ sơ thành viên duy nhất với làm nổi bật tìm kiếm
 function renderMemberCard(m) {
-    // Use default avatar if member has no image / Sử dụng avatar mặc định nếu thành viên không có hình ảnh
-    const imageSrc =
-        m.img && m.img.trim() !== "" ? m.img : Constant.DEFAULT_AVATAR;
+    const imageSrc = m.img === Constant.MEMBER_IMAGE_PATH
+        ? Constant.DEFAULT_AVATAR
+        : m.img;
 
     // Highlight search terms in member name / Làm nổi bật các thuật ngữ tìm kiếm trong tên thành viên
     const displayName = m.nickName && m.nickName.trim() !== ""
