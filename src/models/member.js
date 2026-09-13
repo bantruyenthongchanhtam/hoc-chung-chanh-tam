@@ -6,6 +6,21 @@
  * @class Member
  */
 class Member {
+    static normalizeImagePath(image) {
+        const value = String(image ?? "").trim();
+        if (!value) return Constant.MEMBER_IMAGE_PATH;
+
+        const href = value.match(/href\s*=\s*["']([^"']+)["']/i);
+        const markdown = value.match(/!\[[^\]]*\]\(([^)]+)\)/);
+        const imagePath = (href?.[1] || markdown?.[1] || value).trim();
+
+        if (/^(https?:)?\/\//i.test(imagePath) || imagePath.startsWith("./")) {
+            return imagePath;
+        }
+
+        return Constant.MEMBER_IMAGE_PATH + imagePath.replace(/^\.?\/?public\/member-images\//i, "");
+    }
+
     /**
      * Initialize new Member instance / Khởi tạo instance Member mới
      * 
@@ -29,7 +44,7 @@ class Member {
         this.group = group;                                         // Organization group / Nhóm tổ chức
         this.year = year;                                           // Year of admission / Năm kết nạp
         this.note = note;                                           // Additional notes / Ghi chú bổ sung
-        this.img = Constant.MEMBER_IMAGE_PATH + (img ?? "");        // Avatar image URL / URL hình ảnh đại diện
+        this.img = Member.normalizeImagePath(img);                  // Avatar image URL / URL hình ảnh đại diện
         this.sortOrder = sortOrder || 0;                            // Display order, default to 0 / Thứ tự hiển thị, mặc định 0
     }
 }
