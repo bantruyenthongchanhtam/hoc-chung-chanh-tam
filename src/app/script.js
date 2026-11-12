@@ -20,7 +20,7 @@ let yearPageIndex = 0; // Current year tab page / Trang tab năm hiện tại
 const DOM_CACHE = {
     // Search and filter elements / Các phần tử tìm kiếm và lọc
     searchInput: null,
-    groupFilter: null,
+    groupSelect: null,
     sortSelect: null,
     limitSelect: null,
 
@@ -47,7 +47,7 @@ const DOM_CACHE = {
     // Initialize all cached elements / Khởi tạo tất cả các phần tử được lưu trữ
     init() {
         this.searchInput = document.getElementById("search-input");
-        this.groupFilter = document.getElementById("group-filter");
+        this.groupSelect = document.getElementById("group-filter");
         this.sortSelect = document.getElementById("sort-select");
         this.limitSelect = document.getElementById("limit-select");
         this.globalLoader = document.getElementById("global-loader");
@@ -173,9 +173,10 @@ function createClearButton() {
     return clearBtn;
 }
 
-// Get sortable name from member object / Lấy tên có thể sắp xếp từ đối tượng thành viên
+// Get sortable name from member object - sort by given name, fall back to full name
+// Lấy tên để sắp xếp - theo tên (name), nếu trống thì dùng họ tên đầy đủ
 function getSortableName(member) {
-    return (member.fullName || member.name || "").toLowerCase();
+    return (member.name || member.fullName || "").toLowerCase();
 }
 
 // Reverse map: base letter -> every diacritic variant (both cases), built once
@@ -215,6 +216,17 @@ function buildAccentPattern(query) {
 // Memoize the highlight regex per query / Ghi nhớ regex highlight theo từng truy vấn
 let highlightRegexCache = { query: null, regex: null };
 
+// Escape HTML special characters to prevent markup/script injection when rendering
+// Escape các ký tự đặc biệt HTML để ngăn chèn mã khi hiển thị
+function escapeHtml(text) {
+    return String(text ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
 // Highlight search terms in text (accent-insensitive) / Làm nổi bật từ tìm kiếm (không phân biệt dấu)
 function highlightText(text, query) {
     if (!query) return text;
@@ -240,12 +252,17 @@ function createEllipsis() {
      Loads all initial data and sets up event handlers
      Tải tất cả dữ liệu ban đầu và thiết lập trình xử lý sự kiện
 ======================= */
-window.onload = async () => {
+// Initialize the application / Khởi tạo ứng dụng
+// Runs on DOMContentLoaded: with defer scripts the DOM is ready before images/audio
+// finish loading, so member data starts fetching sooner than with window.onload
+// Chạy ở DOMContentLoaded: với script defer, DOM sẵn sàng trước khi ảnh/nhạc tải xong
+// nên dữ liệu thành viên bắt đầu tải sớm hơn so với window.onload
+const startApp = async () => {
     DOM_CACHE.init(); // Initialize all cached DOM elements / Khởi tạo tất cả các phần tử DOM được lưu trữ
 
     await wrapWithLoader(async () => {
-        // Load only years that have member data / Tải chỉ các năm có dữ liệu member
-        allYears = await MemberService.getYearsWithData();
+        // Load all years derived from member data / Tải tất cả năm suy ra từ dữ liệu member
+        allYears = await MemberService.getAllYears();
         renderYearTabs(); // Render year selection tabs / Hiển thị các tab chọn năm
         updateYearPageIndex(); // Update the current year page index / Cập nhật chỉ mục trang năm hiện tại
         updateDisplay(); // Display members based on current filters / Hiển thị thành viên dựa trên bộ lọc hiện tại
@@ -313,7 +330,7 @@ function initEvents() {
     });
 
     // Group filter listener for changing member groups / Trình nghe bộ lọc nhóm để thay đổi nhóm thành viên
-    DOM_CACHE.groupFilter.addEventListener("change", (e) => {
+    DOM_CACHE.groupSelect.addEventListener("change", (e) => {
         wrapWithLoader(() => {
             groupFilter = e.target.value;
             currentPage = 1;
@@ -584,7 +601,7 @@ const groupOptionsCache = { year: undefined, groups: [] };
 
 // Update group filter options based on available groups / Cập nhật tùy chọn bộ lọc nhóm dựa trên các nhóm khả dụng
 function updateGroupOptions(members) {
-    const select = DOM_CACHE.groupFilter;
+    const select = DOM_CACHE.groupSelect;
     const currentVal = select.value;
 
     // Only recompute groups when the year changes, not on every render / Chỉ tính lại nhóm khi năm thay đổi, không phải mỗi lần hiển thị
@@ -659,9 +676,6 @@ function renderPaginationUI(totalPages, totalItems, startIdx, currentCount) {
 
     // Show leading ellipsis if pages before startPage / Hiển thị dấu chấm lửng phía trước nếu có trang trước startPage
     if (startPage > 1) {
-        const dot = document.createElement("span");
-        dot.innerText = "...";
-        dot.className = "px-1 text-stone-400 text-xs";
         container.appendChild(createEllipsis());
     }
 
@@ -719,13 +733,11 @@ function applyFilters(members) {
     }
 
     const result = members.filter((item) => {
-        // Use exact matching for precise search / Sử dụng khớp chính xác để tìm kiếm chính xác
+        // Search by name, full name and nickname / Tìm kiếm theo tên, họ tên đầy đủ và biệt danh
         const matchesSearch = !searchQuery ||
+            exactMatch(searchQuery, item.name) ||
             exactMatch(searchQuery, item.fullName) ||
-            exactMatch(searchQuery, item.nickName) ||
-            exactMatch(searchQuery, item.position) ||
-            exactMatch(searchQuery, item.group) ||
-            exactMatch(searchQuery, item.note);
+            exactMatch(searchQuery, item.nickName);
 
         // Check if group matches filter / Kiểm tra xem nhóm có khớp với bộ lọc không
         const isAllGroup =
@@ -786,7 +798,11 @@ function applySort(members) {
      Functions for rendering member cards and empty states
      Các hàm để hiển thị thẻ thành viên và trạng thái trống
 ======================= */
-// Render a single member profile card with search highlighting / Hiển thị một thẻ hồ sơ thành viên duy nhất với làm nổi bật tìm kiếm
+// Render a single member profile card with search highlighting / Hiển thị một thẻ hồ sơ thành viên với làm nổi bật tìm kiếm
+// User-controlled fields are escaped to prevent HTML injection; `note` is kept raw
+// intentionally because the data owner embeds links there
+// Các trường nhập liệu được escape để ngăn chèn HTML; riêng `note` giữ nguyên
+// do dữ liệu cố ý nhúng link cá nhân
 function renderMemberCard(m) {
     const imageSrc = m.img === Constant.MEMBER_IMAGE_PATH
         ? Constant.DEFAULT_AVATAR
@@ -796,20 +812,20 @@ function renderMemberCard(m) {
     const displayName = m.nickName && m.nickName.trim() !== ""
         ? `${m.fullName} (${m.nickName})`
         : m.fullName;
-    const highlightedName = highlightText(displayName, searchQuery);
-    const highlightedPosition = highlightText(m.position, searchQuery);
+    const highlightedName = highlightText(escapeHtml(displayName), searchQuery);
+    const highlightedPosition = highlightText(escapeHtml(m.position), searchQuery);
 
     return `
         <div class="profile-card fade-in">
             <div class="image-outer img-skeleton">
-                <img src="${imageSrc}" loading="lazy" decoding="async" alt="${m.fullName}" class="profile-img opacity-0" width="150" height="150"
+                <img src="${escapeHtml(imageSrc)}" loading="lazy" decoding="async" alt="${escapeHtml(displayName)}" class="profile-img opacity-0" width="150" height="150"
                 onerror="this.onerror=null; this.src='${Constant.DEFAULT_AVATAR}';"
                 onload="this.classList.remove('opacity-0'); this.parentElement.classList.remove('img-skeleton');">
             </div>
             <h2 class="text-lg font-bold text-stone-800 mb-1 text-center">${highlightedName}</h2>
             <p class="text-[10px] text-stone-500 mb-2 text-center">${highlightedPosition}</p>
             <span class="bg-tag px-2 py-0.5 rounded-full text-[10px] font-bold text-center">
-                ${m.group}
+                ${escapeHtml(m.group)}
             </span>
             <p class="text-stone-500 text-xs italic mt-2 text-center">
                 "${m.note}"
@@ -873,4 +889,19 @@ function createLotus() {
 
     // Remove after animation completes / Xóa sau khi hoạt ảnh hoàn thành
     setTimeout(() => lotus.remove(), 10000);
+}
+
+/* =======================
+     BOOTSTRAP / KHỞI ĐỘNG
+     Must stay at the END of this file: startApp references const declarations
+     above (wrapWithLoader, ...), so calling it earlier would hit the temporal
+     dead zone (ReferenceError). Mirrors the modal.js init pattern.
+     Phải đứng CUỐI file: startApp tham chiếu các const khai báo phía trên
+     (wrapWithLoader, ...), gọi sớm hơn sẽ dính temporal dead zone (ReferenceError).
+     Theo đúng mẫu init của modal.js.
+======================= */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+} else {
+    startApp();
 }

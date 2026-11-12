@@ -94,10 +94,20 @@ const Modal = (() => {
 
         const message = input.value;
         const validation = validateMessage(message);
-        
+
         if (!validation.valid) {
             Toast.error('Lỗi', validation.error);
             return;
+        }
+
+        // Prevent double submission while the hidden POST is in flight
+        // Ngăn gửi trùng khi POST ẩn đang thực hiện
+        const submitBtn = getForm()?.querySelector('button[type="submit"]');
+        if (submitBtn?.disabled) return;
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
         }
 
         try {
@@ -142,6 +152,13 @@ const Modal = (() => {
         } catch (error) {
             console.error('Form submission error:', error);
             Toast.error('Lỗi', Constant.MESSAGE.ERROR.MSG_002);
+        } finally {
+            // Re-enable the submit button whichever way the submission ends
+            // Bật lại nút Gửi dù gửi thành công hay thất bại
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+            }
         }
     };
 
@@ -194,4 +211,3 @@ const Modal = (() => {
 // Expose global functions for HTML onclick / Tiếp xúc hàm toàn cục cho onclick HTML
 const openModal = () => Modal.open();
 const closeModal = () => Modal.close();
-const submitForm = (event) => Modal.submit(event);

@@ -1,0 +1,53 @@
+name: Build assets
+
+# Rebuild data.json + tailwind.css when sources change
+# Xây lại data.json + tailwind.css khi nguồn thay đổi
+on:
+  push:
+    branches: [dev, main]
+  workflow_dispatch: # allow manual run / cho phép chạy thủ công
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-assets
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # data.xlsx -> data.json (pure Node, no install needed)
+      # Chuyển data.xlsx -> data.json (Node thuần, không cần cài đặt)
+      - name: Convert data.xlsx to data.json
+        run: node scripts/convert-data.js
+
+      # Static Tailwind CSS replaces the 350KB CDN script
+      # Tailwind CSS tĩnh thay cho script CDN ~350KB
+      - name: Build Tailwind CSS
+        run: |
+          npm install tailwindcss@3.4.17 --no-save
+          npx tailwindcss -c tailwind.config.js -i tailwind.input.css -o assets/styles/tailwind.css --minify
+
+      # Commit only when built files actually changed
+      # Chỉ commit khi file build thực sự thay đổi
+      - name: Commit built assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data.json assets/styles/tailwind.css
+          if git diff --cached --quiet; then
+            echo "No changes - skip commit / Không có thay đổi - bỏ qua"
+          else
+            git commit -m "auto: rebuild data.json + tailwind.css"
+            git push
+          fi

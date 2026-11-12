@@ -21,9 +21,10 @@ const Constant = (() => {
             FORM_ID: '1FAIpQLSflwYMViQ1H06TmKg-LdaBDdEoqA57Js2fefctUBVrMlXNabg',
         },
         DATABASE: {
-            DATA_EXCEL_URL: "./public/data.xlsx", // Updated path / Đã cập nhật đường dẫn
-            CACHE_TIME_MS: 5 * 60 * 1000, // Excel workbook cache TTL (5 minutes) / Bộ nhớ cache sổ làm việc Excel (5 phút)
-            SHEET_NAME: "DS", // Single sheet name holding all member data / Tên sheet duy nhất chứa toàn bộ dữ liệu thành viên
+            // JSON converted from public/data.xlsx by scripts/convert-data.js
+            // JSON được chuyển từ public/data.xlsx bởi scripts/convert-data.js
+            DATA_JSON_URL: "./public/data.json",
+            CACHE_TIME_MS: 5 * 60 * 1000, // Member data cache TTL (5 minutes) / Thời gian cache dữ liệu thành viên (5 phút)
         }
     };
 
@@ -40,9 +41,6 @@ const Constant = (() => {
     };
 
     const MEMBER = {
-        // Year range configuration / Cấu hình phạm vi năm
-        START_YEAR: 2008, // Starting year for member data / Năm bắt đầu cho dữ liệu member
-        
         // Member field indices in Excel rows (0-based) / Chỉ số trường member trong hàng Excel (dựa trên 0)
         FIELDS: {
             ID: 0,              // id / Mã định danh
