@@ -466,6 +466,21 @@ function initMusic() {
             }, 300);
         }
     }
+
+    // Pause music when the page becomes hidden - MOBILE ONLY (screen off, app/tab switch)
+    // On desktop the music keeps playing when switching tabs / minimizing
+    // Tạm dừng nhạc khi trang bị ẩn - CHỈ TRÊN MOBILE (tắt màn hình, chuyển app/tab)
+    // Trên PC giữ nguyên nhạc khi chuyển tab / thu nhỏ cửa sổ
+    const isMobileDevice =
+        (navigator.userAgentData && navigator.userAgentData.mobile === true) ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && isMobileDevice && !audio.paused) {
+            audio.pause();
+            updateMusicUI(false);
+        }
+    });
 }
 
 /* Update music button UI based on play state / Cập nhật giao diện nút nhạc dựa trên trạng thái phát */
