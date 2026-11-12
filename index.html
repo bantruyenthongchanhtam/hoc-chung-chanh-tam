@@ -36,11 +36,15 @@
     <link rel="icon" type="image/png" href="./assets/images/favicon.png" />
     <link rel="apple-touch-icon" href="./assets/images/favicon.png" />
 
+    <!-- Font Preconnect / Kết Nối Sớm Font (tối ưu DNS/TLS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <!-- Fonts / Phông Chữ -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&family=Noto+Serif+Vietnamese:wght@400;700&display=swap" rel="stylesheet" />
 
-    <!-- Icons Library / Thư Viện Biểu Tượng -->
-    <script src="./assets/libs/lucide.min.js"></script>
+    <!-- Icons Library / Thư Viện Biểu Tượng (defer: không chặn render) -->
+    <script src="./assets/libs/lucide.min.js" defer></script>
 
     <!-- Stylesheets / Biểu Định Phong Cách -->
     <link rel="stylesheet" href="./assets/styles/style.css" />
@@ -249,8 +253,8 @@
             </button>
         </div>
 
-        <!-- Background Music Audio / Âm Thanh Nền -->
-        <audio id="bg-music" loop>
+        <!-- Background Music Audio / Âm Thanh Nền (preload=none: chỉ tải khi người dùng bật) -->
+        <audio id="bg-music" loop preload="none">
             <source src="./assets/audio/background_music.mp3" type="audio/mpeg" />
         </audio>
     </div>
@@ -259,26 +263,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Libraries / Thư Viện -->
-    <script src="./assets/libs/xlsx.full.min.js"></script>
+    <script src="./assets/libs/xlsx.full.min.js" defer></script>
 
-    <!-- Application Scripts / Tập Lệnh Ứng Dụng -->
+    <!-- Application Scripts / Tập Lệnh Ứng Dụng (defer: tải song song, giữ đúng thứ tự) -->
     <!-- Constants / Hằng Số -->
-    <script src="./src/core/constants.js"></script>
+    <script src="./src/core/constants.js" defer></script>
 
     <!-- Models / Mô Hình -->
-    <script src="./src/models/member.js"></script>
+    <script src="./src/models/member.js" defer></script>
 
     <!-- Services / Dịch Vụ -->
-    <script src="./src/services/excel.service.js"></script>
-    <script src="./src/services/member.service.js"></script>
+    <script src="./src/services/excel.service.js" defer></script>
+    <script src="./src/services/member.service.js" defer></script>
 
     <!-- UI Components / Thành Phần Giao Diện -->
-    <script src="./src/ui/modal.js"></script>
-    <script src="./src/ui/toast.js"></script>
+    <script src="./src/ui/modal.js" defer></script>
+    <script src="./src/ui/toast.js" defer></script>
 
     <!-- Main Script / Tập Lệnh Chính -->
-    <script src="./src/app/script.js"></script>
-</body>
-</html>
+    <script src="./src/app/script.js" defer></script>
 </body>
 </html>
