@@ -149,8 +149,13 @@ function createClearButton() {
 
     if (!clearBtn) {
         clearBtn = document.createElement("button");
-        clearBtn.className = "clear-search-btn absolute right-3 top-1/2 -translate-y-1/2 text-orange-400 hover:text-orange-600 text-lg flex items-center justify-center";
-        clearBtn.innerHTML = "✕";
+        // Positioning lives entirely in the .clear-search-btn CSS class (single source of truth)
+        // SVG icon instead of the "✕" text glyph: fallback-font metrics made it sit off-center
+        // Vị trí đặt hoàn toàn trong class CSS .clear-search-btn (một nguồn duy nhất)
+        // Dùng icon SVG thay vì ký tự "✕": font fallback làm ký tự bị lệch giữa theo chiều dọc
+        clearBtn.className = "clear-search-btn text-orange-400";
+        clearBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>`;
+        clearBtn.setAttribute("aria-label", "Xóa tìm kiếm");
         clearBtn.type = "button";
         clearBtn.onclick = (e) => {
             e.preventDefault();
@@ -173,11 +178,53 @@ function getSortableName(member) {
     return (member.fullName || member.name || "").toLowerCase();
 }
 
-// Highlight search terms in text / Làm nổi bật các từ tìm kiếm trong văn bản
+// Reverse map: base letter -> every diacritic variant (both cases), built once
+// Bản đồ ngược: chữ gốc -> mọi biến thể có dấu (cả hoa lẫn thường), chỉ tạo một lần
+const ACCENT_VARIANTS = (() => {
+    const map = {};
+    for (const [variant, base] of Object.entries(DIACRITICS_MAP)) {
+        const b = base.toLowerCase();
+        const set = (map[b] = map[b] || new Set());
+        set.add(b);
+        set.add(b.toUpperCase());
+        set.add(variant);
+        set.add(variant.toLowerCase());
+        set.add(variant.toUpperCase());
+    }
+    return map;
+})();
+
+// Build an accent-insensitive pattern: "uyen" -> class matching "Uyên", "tu" -> matches "Tú/Tụ/Tũ"...
+// Dựng mẫu không phân biệt dấu: "uyen" -> lớp ký tự khớp "Uyên", "tu" -> khớp "Tú/Tụ/Tũ"...
+function buildAccentPattern(query) {
+    return [...query].map((ch) => {
+        const base = DIACRITICS_MAP[ch]
+            ? DIACRITICS_MAP[ch].toLowerCase()
+            : ch.toLowerCase();
+        const variants = ACCENT_VARIANTS[base];
+        if (variants) {
+            // Only letters from DIACRITICS_MAP - safe inside a character class
+            // Chỉ chứa chữ cái từ DIACRITICS_MAP - an toàn trong lớp ký tự
+            return `[${[...variants].join('')}]`;
+        }
+        // Not a letter with variants - escape regex specials / Không phải chữ có dấu - escape ký tự đặc biệt
+        return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }).join('');
+}
+
+// Memoize the highlight regex per query / Ghi nhớ regex highlight theo từng truy vấn
+let highlightRegexCache = { query: null, regex: null };
+
+// Highlight search terms in text (accent-insensitive) / Làm nổi bật từ tìm kiếm (không phân biệt dấu)
 function highlightText(text, query) {
     if (!query) return text;
-    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-    return text.replace(regex, '<mark class="bg-yellow-200 font-semibold">$1</mark>');
+    if (highlightRegexCache.query !== query) {
+        highlightRegexCache = {
+            query,
+            regex: new RegExp(`(${buildAccentPattern(query)})`, 'gi'),
+        };
+    }
+    return text.replace(highlightRegexCache.regex, '<mark class="bg-yellow-200 font-semibold">$1</mark>');
 }
 
 // Create pagination ellipsis element / Tạo phần tử dấu chấm lửng phân trang
@@ -222,7 +269,7 @@ const hideLoader = () =>
 // Wrap function execution with loading animation / Bao bọc thực thi hàm bằng hoạt ảnh tải
 const wrapWithLoader = async (fn) => {
     showLoader();
-    await new Promise((r) => setTimeout(r, 400)); // Wait for fade-in animation / Chờ hoạt ảnh mờ dần
+    await new Promise((r) => setTimeout(r, 150)); // Brief pause so the loader is perceivable, not a hard flash / Tạm dừng ngắn để loader hiển thị mà không gây giật
     await fn();
     hideLoader();
 };
@@ -253,8 +300,9 @@ function initEvents() {
 
         if (searchQuery) {
             // Show clear button when input has value / Hiển thị nút xóa khi input có giá trị
+            // "flex" để kích hoạt căn giữa flex trong CSS (không dùng "block" làm lệch icon)
             const clearBtn = createClearButton();
-            clearBtn.style.display = "block";
+            clearBtn.style.display = "flex";
         } else {
             // Hide clear button when input is empty / Ẩn nút xóa khi input trống
             const clearBtn = DOM_CACHE.searchInput.parentElement.querySelector('.clear-search-btn');
