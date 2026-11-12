@@ -27,7 +27,7 @@ class Member {
      * @param {string} id - Unique identifier / Mã định danh duy nhất
      * @param {string} fullName - Full name with diacritics / Tên đầy đủ có dấu
      * @param {string} name - Short name / Tên rút gọn
-        this.nickName = nickName;               // Nick name / Biệt danh
+     * @param {string} nickName - Nick name / Biệt danh
      * @param {string} position - Job position / Chức vụ
      * @param {string} group - Organization group / Nhóm tổ chức
      * @param {string|number} year - Year of admission / Năm kết nạp

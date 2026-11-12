@@ -1,25 +1,28 @@
 /**
  * Member Service / Dịch Vụ Thành Viên
- * Manages member data loading, caching and transformation from Excel sheets
- * Quản lý tải dữ liệu thành viên, caching và chuyển đổi từ các sheet Excel
+ * Loads member data from public/data.json (converted from data.xlsx by scripts/convert-data.js)
+ * Tải dữ liệu thành viên từ public/data.json (được chuyển từ data.xlsx bởi scripts/convert-data.js)
  */
 const MemberService = (() => {
     /* =======================
        STATE / TRẠNG THÁI
-       Cache for the full member list loaded from the "DS" sheet
-       Bộ nhớ cache cho danh sách thành viên đầy đủ tải từ sheet "DS"
+       Cache for the full member list / Bộ nhớ cache danh sách thành viên
     ======================= */
-    let membersCache = null; // All members from the single "DS" sheet / Tất cả thành viên từ sheet "DS" duy nhất
+    let membersCache = null;
+    let cacheTimestamp = null;
     let yearsCache = null; // Unique years derived from members / Các năm duy nhất trích xuất từ thành viên
+    const MAX_CACHE_TIME = Constant.CONFIG.DATABASE.CACHE_TIME_MS;
+    const DATA_URL = Constant.CONFIG.DATABASE.DATA_JSON_URL;
 
     /**
-     * Validate row structure / Xác thực cấu trúc hàng
-     * @param {Array} row - Row data / Dữ liệu hàng
-     * @returns {boolean} True if valid / Đúng nếu hợp lệ
+     * Invalidate cache if expired / Làm mất hiệu lực cache nếu hết hạn
      */
-    const isValidRow = (row) => {
-        return Array.isArray(row) && row.length >= Constant.MEMBER.ROW_MIN_LENGTH && 
-               row.some(cell => cell !== null && cell !== undefined && cell !== "");
+    const invalidateCacheIfExpired = () => {
+        if (membersCache && cacheTimestamp && Date.now() - cacheTimestamp > MAX_CACHE_TIME) {
+            membersCache = null;
+            yearsCache = null;
+            cacheTimestamp = null;
+        }
     };
 
     /**
@@ -32,56 +35,56 @@ const MemberService = (() => {
     };
 
     /**
-     * Map row to Member object / Ánh xạ hàng thành đối tượng Member
-     * @param {Array} row - Row data with 10 elements / Dữ liệu hàng có 10 phần tử
-     * @returns {Member} Member object / Đối tượng Member
-     * @throws {Error} If row structure is invalid / Nếu cấu trúc hàng không hợp lệ
+     * Map JSON row to Member object / Ánh xạ dòng JSON thành đối tượng Member
+     * @param {Object} row - Member row from data.json / Dòng dữ liệu từ data.json
+     * @returns {Member|null} Member object, or null if the row is empty / Đối tượng Member, hoặc null nếu dòng rỗng
      */
     const mapRowToMember = (row) => {
-        if (!isValidRow(row)) {
-            throw new Error(`Invalid row structure: expected ${Constant.MEMBER.ROW_MIN_LENGTH} fields, got ${row.length}`);
-        }
+        if (!row || typeof row !== 'object') return null;
 
-        const F = Constant.MEMBER.FIELDS; // Alias for brevity / Bí danh cho ngắn gọn
+        const hasData = [
+            row.id, row.fullName, row.name, row.nickName, row.position,
+            row.group, row.year, row.note, row.img, row.sortOrder,
+        ].some((cell) => cell !== null && cell !== undefined && cell !== '');
+        if (!hasData) return null;
+
         return new Member(
-            row[F.ID] || "",               // id / Mã định danh
-            row[F.FULL_NAME] || "",        // fullName / Tên đầy đủ
-            row[F.NICK_NAME] || "",        // nickName / Biệt danh
-            row[F.NAME] || "",             // name / Tên
-            row[F.POSITION] || "",         // position / Vị trí
-            row[F.GROUP] || "",            // group / Nhóm
-            row[F.YEAR] || "",             // year / Năm kết nạp
-            row[F.NOTE] || "",             // note / Ghi chú
-            row[F.IMAGE] || "",            // image / Hình ảnh
-            row[F.SORT_ORDER] || 0         // sort_order / Thứ tự sắp xếp (default to 0)
+            row.id || '',            // id / Mã định danh
+            row.fullName || '',      // fullName / Tên đầy đủ
+            row.name || '',          // name / Tên
+            row.nickName || '',      // nickName / Biệt danh
+            row.position || '',      // position / Vị trí
+            row.group || '',         // group / Nhóm
+            row.year || '',          // year / Năm kết nạp
+            row.note || '',          // note / Ghi chú
+            row.img || '',           // image / Hình ảnh
+            row.sortOrder || 0       // sort_order / Thứ tự sắp xếp (default to 0)
         );
     };
 
     /**
-     * Load and cache all members from the "DS" sheet / Tải và lưu bộ nhớ cache tất cả thành viên từ sheet "DS"
-     * @returns {Promise<Array<Member>>} Array of all members / Mảng tất cả thành viên
+     * Load and cache all members from data.json / Tải và cache tất cả thành viên từ data.json
+     * @returns {Promise<Array<Member>>} Array of all members sorted by order / Mảng thành viên sắp xếp theo thứ tự
      */
     const loadAllMembers = async () => {
         try {
+            invalidateCacheIfExpired();
             if (membersCache) return membersCache;
 
-            const rows = await ExcelService.readSheet(Constant.CONFIG.DATABASE.SHEET_NAME);
+            // "default" lets the browser reuse the <link rel="preload"> response and
+            // conditional HTTP caching (304) instead of re-downloading the file
+            // "default" cho phép tái dùng phản hồi preload và cache HTTP có điều kiện (304)
+            const response = await fetch(DATA_URL, { cache: "default" });
 
-            if (!Array.isArray(rows) || rows.length === 0) {
-                membersCache = [];
-                return membersCache;
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
+            const data = await response.json();
+            const rows = Array.isArray(data && data.members) ? data.members : [];
+
             membersCache = rows
-                .filter(row => {
-                    try {
-                        return isValidRow(row);
-                    } catch (e) {
-                        console.warn('Invalid row skipped:', row);
-                        return false;
-                    }
-                })
-                .map(row => {
+                .map((row) => {
                     try {
                         return mapRowToMember(row);
                     } catch (error) {
@@ -89,12 +92,15 @@ const MemberService = (() => {
                         return null;
                     }
                 })
-                .filter(member => member !== null) // Remove failed mappings / Xóa các ánh xạ thất bại
+                .filter((member) => member !== null) // Remove failed mappings / Xóa các ánh xạ thất bại
                 .sort((a, b) => a.sortOrder - b.sortOrder); // Sort by order / Sắp xếp theo thứ tự
+            cacheTimestamp = Date.now();
 
             return membersCache;
         } catch (error) {
             console.error('MemberService.loadAllMembers error:', error);
+            // Show user-friendly error / Hiển thị lỗi thân thiện với người dùng
+            Toast.error('Lỗi tải dữ liệu', 'Không thể tải danh sách thành viên. Vui lòng tải lại trang.');
             membersCache = [];
             return membersCache;
         }
@@ -150,36 +156,17 @@ const MemberService = (() => {
     };
 
     /**
-     * Get only years that actually have member data / Lấy chỉ các năm thực sự có dữ liệu thành viên
-     * Kept for backward compatibility with existing UI code
-     * Giữ lại để tương thích ngược với code giao diện hiện tại
-     * @returns {Promise<Array>} Array of years with data, including "Tất cả" / Mảng năm có dữ liệu, bao gồm "Tất cả"
-     */
-    const getYearsWithData = async () => {
-        try {
-            return await getAllYears();
-        } catch (error) {
-            console.error('MemberService.getYearsWithData error:', error);
-            return [Constant.ALL]; // Return at least "Tất cả" on error / Trả về ít nhất "Tất cả" khi có lỗi
-        }
-    };
-
-    /**
      * Clear cache manually / Xóa bộ nhớ cache theo cách thủ công
      */
     const clearCache = () => {
         membersCache = null;
         yearsCache = null;
-        // Clear Excel service cache as well / Cũng xóa bộ nhớ cache dịch vụ Excel
-        if (ExcelService.clearCache) {
-            ExcelService.clearCache();
-        }
+        cacheTimestamp = null;
     };
 
     return Object.freeze({
         getMembersByYear: loadYear,
         getAllYears,
-        getYearsWithData,
         clearCache,
     });
 })();
